@@ -41,11 +41,13 @@ class TreasureTableParser:
         can_merge = False
         subtable_position = ""
         object_category_name = ""
+        tt_entry_map: dict[str, dict[str, bool]] = {}
+
         for line in lines:
             if line.startswith("//"):
                 continue
 
-            if line.startswith('new treasuretable "'):
+            if line.startswith('new treasuretable"'):
                 tt_name = line.split('"')[1].strip()
 
             if tt_name:
@@ -62,14 +64,16 @@ class TreasureTableParser:
                     object_category_name = self.get_value_from_line_in_quotes(line)
 
                 if object_category_name and subtable_position:
-                    tt_map[tt_name].append(
-                        TreasureTableEntry(
-                            can_merge=can_merge,
-                            subtable_position=subtable_position,
-                            object_category_name=object_category_name,
-                        )
+                    tt_entry = TreasureTableEntry(
+                        can_merge=can_merge,
+                        subtable_position=subtable_position,
+                        object_category_name=object_category_name,
                     )
 
-        # pprint.pp(tt_map)
+                    if tt_name not in tt_entry_map:
+                        tt_entry_map[tt_name] = {}
 
+                    if object_category_name not in tt_entry_map[tt_name]:
+                        tt_map[tt_name].append(tt_entry)
+                        tt_entry_map[tt_name][object_category_name] = True
         return tt_map

@@ -19,4 +19,4 @@ class TreasureTableEntry:
     object_category_name: str
 
     def __eq__(self, other):
-        return self.object_category_name == other.object_category_name
+        return self.object_category_name == other

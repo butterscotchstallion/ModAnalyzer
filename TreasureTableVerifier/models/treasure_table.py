@@ -11,3 +11,6 @@ class TreasureTable:
 
     def __str__(self):
         return f"{self.name} ({len(self.entries)} entries)"
+
+    def __lt__(self, other):
+        return len(self.entries) < len(other.entries)
