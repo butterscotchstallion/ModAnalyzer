@@ -1,5 +1,5 @@
 # TreasureTableVerifier
-Verifies treasure table entries for Baldur's Gate 3
+Parses and verifies treasure table entries for Baldur's Gate 3
 
 ## Tests
 `source .venv/Scripts/activate`

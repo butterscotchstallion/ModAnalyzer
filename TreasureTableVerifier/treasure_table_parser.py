@@ -2,8 +2,6 @@ import logging
 
 from TreasureTableVerifier.models import TreasureTableEntry
 
-logger = logging.getLogger(__name__)
-
 
 class TreasureTableParser:
     """
@@ -17,6 +15,9 @@ class TreasureTableParser:
     new subtable "1,1"
     object category "I_OBJ_RUNE_ROF_BONE_ARMOR",1,0,0,0,0,0,0,0
     """
+
+    def __init__(self):
+        self.logger = logging.getLogger(__name__)
 
     def get_quoted_values(self, input: str) -> list[str]:
         values = input.split('"')[1::]
@@ -43,14 +44,18 @@ class TreasureTableParser:
         object_category_name = ""
         tt_entry_map: dict[str, dict[str, bool]] = {}
 
+        self.logger.info(f"Parsing {len(lines)} lines")
+
         for line in lines:
             if line.startswith("//"):
                 continue
 
-            if line.startswith('new treasuretable"'):
+            if line.startswith("new treasuretable"):
                 tt_name = line.split('"')[1].strip()
 
             if tt_name:
+                self.logger.debug(f"Name: {tt_name}")
+
                 if tt_name not in tt_map:
                     tt_map[tt_name] = []
 
@@ -64,6 +69,8 @@ class TreasureTableParser:
                     object_category_name = self.get_value_from_line_in_quotes(line)
 
                 if object_category_name and subtable_position:
+                    print("valid object category name and subtable")
+
                     tt_entry = TreasureTableEntry(
                         can_merge=can_merge,
                         subtable_position=subtable_position,
@@ -73,7 +80,10 @@ class TreasureTableParser:
                     if tt_name not in tt_entry_map:
                         tt_entry_map[tt_name] = {}
 
-                    if object_category_name not in tt_entry_map[tt_name]:
+                    if object_category_name not in tt_entry_map[tt_name].keys():
+                        print("adding entry")
                         tt_map[tt_name].append(tt_entry)
                         tt_entry_map[tt_name][object_category_name] = True
+                    else:
+                        print(tt_entry_map)
         return tt_map

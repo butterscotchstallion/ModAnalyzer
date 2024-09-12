@@ -8,9 +8,13 @@ def test_parse_file():
     parser = TreasureTableParser()
     reader = TreasureTableReader()
     tt_lines = reader.read_from_file("tests/fixture/TreasureTable.txt")
+
+    assert len(tt_lines) > 0, "Failed to read from file"
+
     tt_map = parser.parse_treasure_table(tt_lines)
 
     assert tt_map is not None, "Failed to parse treasure table"
+    assert len(tt_map) > 0, "Empty treasure table"
     assert len(tt_map.keys()) == 29
 
     # tt_map = sorted(tt_map)
@@ -54,6 +58,9 @@ def test_parse_file():
 
     # Summary
     print(os.linesep)
+
+    # pprint.pp(tt_map)
+    print(tt_map)
 
     for tt in tt_map:
         tt_entry_len = len(tt_map[tt])
