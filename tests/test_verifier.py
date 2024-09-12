@@ -1,4 +1,5 @@
 import os
+import pprint
 
 from TreasureTableVerifier import TreasureTableParser, TreasureTableReader
 
@@ -60,3 +61,5 @@ def test_parse_file():
         tt_entry_len = len(tt_map[tt])
         if tt in entry_map:
             assert tt_entry_len == len(entry_map[tt]), f"Entries mismatch: {tt}"
+
+    pprint.pp(entry_map)
