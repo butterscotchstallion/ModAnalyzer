@@ -54,8 +54,6 @@ class TreasureTableParser:
                 tt_name = line.split('"')[1].strip()
 
             if tt_name:
-                self.logger.debug(f"Name: {tt_name}")
-
                 if tt_name not in tt_map:
                     tt_map[tt_name] = []
 
@@ -69,8 +67,6 @@ class TreasureTableParser:
                     object_category_name = self.get_value_from_line_in_quotes(line)
 
                 if object_category_name and subtable_position:
-                    print("valid object category name and subtable")
-
                     tt_entry = TreasureTableEntry(
                         can_merge=can_merge,
                         subtable_position=subtable_position,
@@ -81,9 +77,6 @@ class TreasureTableParser:
                         tt_entry_map[tt_name] = {}
 
                     if object_category_name not in tt_entry_map[tt_name].keys():
-                        print("adding entry")
                         tt_map[tt_name].append(tt_entry)
                         tt_entry_map[tt_name][object_category_name] = True
-                    else:
-                        print(tt_entry_map)
         return tt_map

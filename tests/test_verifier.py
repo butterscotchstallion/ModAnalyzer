@@ -1,5 +1,4 @@
 import os
-import pprint
 
 from TreasureTableVerifier import TreasureTableParser, TreasureTableReader
 
@@ -16,8 +15,6 @@ def test_parse_file():
     assert tt_map is not None, "Failed to parse treasure table"
     assert len(tt_map) > 0, "Empty treasure table"
     assert len(tt_map.keys()) == 29
-
-    # tt_map = sorted(tt_map)
 
     entry_map = {
         "CHA_Exterior_Bandit_Leader": [
@@ -59,13 +56,7 @@ def test_parse_file():
     # Summary
     print(os.linesep)
 
-    # pprint.pp(tt_map)
-    print(tt_map)
-
     for tt in tt_map:
         tt_entry_len = len(tt_map[tt])
         if tt in entry_map:
-            pprint.pp(tt_map[tt])
             assert tt_entry_len == len(entry_map[tt]), f"Entries mismatch: {tt}"
-
-        print(f"{tt}: {tt_entry_len} entries")
