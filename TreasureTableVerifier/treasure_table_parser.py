@@ -78,6 +78,11 @@ class TreasureTableParser:
                     if tt_name not in tt_entry_map:
                         tt_entry_map[tt_name] = {}
 
+                    if object_category_name[0:2] != "I_":
+                        self.logger.error(
+                            f"Invalid object category name: {object_category_name}"
+                        )
+
                     if object_category_name not in tt_entry_map[tt_name].keys():
                         tt_entry = TreasureTableEntry(
                             can_merge=can_merge,
