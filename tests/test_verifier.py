@@ -92,6 +92,10 @@ def test_treasure_table_summary(
     assert summary, "Failed to get treasure table summary"
 
     for obj_category_name in summary:
+        assert (
+            len(summary[obj_category_name]) > 0
+        ), f"{obj_category_name} is not in at least 1 TT"
+
         logger.info(
             f"{obj_category_name} is in {len(summary[obj_category_name])} tables"
         )
