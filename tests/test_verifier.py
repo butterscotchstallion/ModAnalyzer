@@ -78,6 +78,9 @@ def test_parse_file(treasure_table_map: dict[str, list[TreasureTableEntry]]):
         if tt in entry_map:
             assert tt_entry_len == len(entry_map[tt]), f"Entries mismatch: {tt}"
 
+        for entry in treasure_table_map[tt]:
+            assert entry.is_valid, "Unexpected invalid entry"
+
         logger.info(f"{tt}: {tt_entry_len} entries")
 
 
