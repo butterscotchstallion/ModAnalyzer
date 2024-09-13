@@ -92,4 +92,35 @@ class TreasureTableParser:
                         tt_map[tt_name].append(tt_entry)
                         tt_entry_map[tt_name][object_category_name] = True
 
+        # tt_map.sort(key=len)
+        # xs = sorted(tt_map, key=lambda k: len(tt_map[k]))
+        # pprint.pp(xs)
+
         return tt_map
+
+    def get_summary_from_tt_map(
+        self, tt_map: dict[str, list[TreasureTableEntry]]
+    ) -> dict[str, list[str]]:
+        """
+        Builds summary of places where an item appears based on the
+        generated treasure table map
+
+        obj_category_name -> (
+            tt_name,
+            tt_name,
+            ...
+        )
+        """
+        tt_summary = {}
+
+        for tt_name in tt_map:
+            for tt_entry in tt_map[tt_name]:
+                if tt_entry.object_category_name not in tt_summary:
+                    tt_summary[tt_entry.object_category_name] = []
+
+                tt_summary[tt_entry.object_category_name].append(tt_name)
+
+        return tt_summary
+
+    def get_object_name(self, object_category_name: str):
+        return object_category_name[2:]

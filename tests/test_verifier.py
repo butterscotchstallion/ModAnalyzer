@@ -51,6 +51,11 @@ def test_parse_file():
             "I_OBJ_RUNE_ROF_OF_RUNIC_INVIGORATION",
             "I_OBJ_RUNE_ROF_OF_GR",
         ],
+        "MOO_WallTentacleOgress_Treasure": [
+            "I_OBJ_BLOODSTAINED_RUNE",
+            "I_OBJ_RUNE_ROF_MUMMIFICATION",
+            "I_OBJ_RUNE_ROF_TEMPORARY_AMNESIA",
+        ],
     }
 
     # Summary
@@ -62,3 +67,12 @@ def test_parse_file():
             assert tt_entry_len == len(entry_map[tt]), f"Entries mismatch: {tt}"
 
         print(f"{tt}: {tt_entry_len} entries")
+
+    summary = parser.get_summary_from_tt_map(tt_map)
+
+    assert summary, "Failed to get treasure table summary"
+
+    print(os.linesep)
+
+    for obj_category_name in summary:
+        print(f"{obj_category_name} is in {len(summary[obj_category_name])} tables")

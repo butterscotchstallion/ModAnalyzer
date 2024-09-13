@@ -20,3 +20,6 @@ class TreasureTableEntry:
 
     def __eq__(self, other):
         return self.object_category_name == other
+
+    def get_object_name(self):
+        return self.object_category_name[2:]
