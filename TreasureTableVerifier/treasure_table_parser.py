@@ -3,6 +3,10 @@ import logging
 from TreasureTableVerifier.models import TreasureTableEntry
 
 
+class InvalidTreasureTableEntryException(Exception):
+    pass
+
+
 class TreasureTableParser:
     """
     Parses Treasure Table files
@@ -43,6 +47,7 @@ class TreasureTableParser:
         subtable_position: str = ""
         object_category_name: str = ""
         tt_entry_map: dict[str, dict[str, bool]] = {}
+        entry_valid = False
 
         self.logger.info(f"Parsing {len(lines)} lines")
 
@@ -60,6 +65,7 @@ class TreasureTableParser:
                 can_merge = False
                 subtable_position = ""
                 object_category_name = ""
+                entry_valid = False
 
             if tt_name:
                 if tt_name not in tt_map:
@@ -82,19 +88,21 @@ class TreasureTableParser:
                         self.logger.error(
                             f"Invalid object category name: {object_category_name}"
                         )
+                        entry_valid = False
+                    else:
+                        entry_valid = True
 
                     if object_category_name not in tt_entry_map[tt_name].keys():
                         tt_entry = TreasureTableEntry(
                             can_merge=can_merge,
                             subtable_position=subtable_position,
                             object_category_name=object_category_name,
+                            is_valid=entry_valid,
                         )
                         tt_map[tt_name].append(tt_entry)
                         tt_entry_map[tt_name][object_category_name] = True
 
-        # tt_map.sort(key=len)
-        # xs = sorted(tt_map, key=lambda k: len(tt_map[k]))
-        # pprint.pp(xs)
+        self.logger.info(f"Parsed {len(tt_map.keys())} treasure tables")
 
         return tt_map
 

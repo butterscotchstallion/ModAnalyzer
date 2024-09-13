@@ -1,4 +1,4 @@
-import os
+import logging
 
 import pytest
 
@@ -7,11 +7,11 @@ from TreasureTableVerifier.models.treasure_table_entry import TreasureTableEntry
 
 parser = TreasureTableParser()
 reader = TreasureTableReader()
+logger = logging.getLogger(__name__)
 
 
-@pytest.fixture
-def treasure_table_map():
-    tt_lines = reader.read_from_file("tests/fixture/TreasureTable.txt")
+def get_tt_map(file_path: str):
+    tt_lines = reader.read_from_file(file_path)
 
     assert len(tt_lines) > 0, "Failed to read from file"
 
@@ -19,8 +19,14 @@ def treasure_table_map():
 
     assert tt_map is not None, "Failed to parse treasure table"
     assert len(tt_map) > 0, "Empty treasure table"
-    assert len(tt_map.keys()) == 29
 
+    return tt_map
+
+
+@pytest.fixture(scope="session")
+def treasure_table_map():
+    tt_map = get_tt_map("tests/fixture/TreasureTable.txt")
+    assert len(tt_map.keys()) == 29
     yield tt_map
 
 
@@ -67,15 +73,12 @@ def test_parse_file(treasure_table_map: dict[str, list[TreasureTableEntry]]):
         ],
     }
 
-    # Summary
-    print(os.linesep)
-
     for tt in treasure_table_map:
         tt_entry_len = len(treasure_table_map[tt])
         if tt in entry_map:
             assert tt_entry_len == len(entry_map[tt]), f"Entries mismatch: {tt}"
 
-        print(f"{tt}: {tt_entry_len} entries")
+        logger.info(f"{tt}: {tt_entry_len} entries")
 
 
 def test_treasure_table_summary(
@@ -85,7 +88,19 @@ def test_treasure_table_summary(
 
     assert summary, "Failed to get treasure table summary"
 
-    print(os.linesep)
-
     for obj_category_name in summary:
-        print(f"{obj_category_name} is in {len(summary[obj_category_name])} tables")
+        logger.info(
+            f"{obj_category_name} is in {len(summary[obj_category_name])} tables"
+        )
+
+
+def test_invalid_tt_entry():
+    tt_map = get_tt_map("tests/fixture/TreasureTableInvalidEntry.txt")
+    num_invalid_entries = 0
+
+    for tt_name in tt_map:
+        for entry in tt_map[tt_name]:
+            if not entry.is_valid:
+                num_invalid_entries += 1
+
+    assert num_invalid_entries == 1, "Invalid entry detection not working as expected"

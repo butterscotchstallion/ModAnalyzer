@@ -17,9 +17,7 @@ class TreasureTableEntry:
     # I think this is row/column but I don't care about this right now
     subtable_position: str
     object_category_name: str
+    is_valid: bool
 
     def __eq__(self, other):
         return self.object_category_name == other
-
-    def get_object_name(self):
-        return self.object_category_name[2:]

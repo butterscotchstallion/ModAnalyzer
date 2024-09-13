@@ -1,0 +1,14 @@
+new treasuretable "HAG_Swamp_Chest"
+CanMerge 1
+new subtable "1,1"
+object category "tunamelt",1,0,0,0,0,0,0,0
+new subtable "1,1"
+object category "I_OBJ_RUNE_ROF_TEMPORARY_AMNESIA",1,0,0,0,0,0,0,0
+
+new treasuretable "WYR_SmugglerCave_Basement_Treasure"
+CanMerge 1
+// Mummification Rune //
+new subtable "-1"
+object category "I_OBJ_RUNE_ROF_MUMMIFICATION",1,0,0,0,0,0,0,0
+new subtable "1,1"
+object category "I_OBJ_RUNE_ROF_OF_GR",1,0,0,0,0,0,0,0
