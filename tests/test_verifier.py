@@ -1,21 +1,30 @@
 import os
 
+import pytest
+
 from TreasureTableVerifier import TreasureTableParser, TreasureTableReader
+from TreasureTableVerifier.models.treasure_table_entry import TreasureTableEntry
+
+parser = TreasureTableParser()
+reader = TreasureTableReader()
 
 
-def test_parse_file():
-    parser = TreasureTableParser()
-    reader = TreasureTableReader()
+@pytest.fixture
+def treasure_table_map():
     tt_lines = reader.read_from_file("tests/fixture/TreasureTable.txt")
 
     assert len(tt_lines) > 0, "Failed to read from file"
 
-    tt_map = parser.parse_treasure_table(tt_lines)
+    tt_map: dict[str, list[TreasureTableEntry]] = parser.parse_treasure_table(tt_lines)
 
     assert tt_map is not None, "Failed to parse treasure table"
     assert len(tt_map) > 0, "Empty treasure table"
     assert len(tt_map.keys()) == 29
 
+    yield tt_map
+
+
+def test_parse_file(treasure_table_map: dict[str, list[TreasureTableEntry]]):
     entry_map = {
         "CHA_Exterior_Bandit_Leader": [
             "I_OBJ_RUNE_ROF_BONE_ARMOR",
@@ -61,14 +70,18 @@ def test_parse_file():
     # Summary
     print(os.linesep)
 
-    for tt in tt_map:
-        tt_entry_len = len(tt_map[tt])
+    for tt in treasure_table_map:
+        tt_entry_len = len(treasure_table_map[tt])
         if tt in entry_map:
             assert tt_entry_len == len(entry_map[tt]), f"Entries mismatch: {tt}"
 
         print(f"{tt}: {tt_entry_len} entries")
 
-    summary = parser.get_summary_from_tt_map(tt_map)
+
+def test_treasure_table_summary(
+    treasure_table_map: dict[str, list[TreasureTableEntry]],
+):
+    summary = parser.get_summary_from_tt_map(treasure_table_map)
 
     assert summary, "Failed to get treasure table summary"
 
