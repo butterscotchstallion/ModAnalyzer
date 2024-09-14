@@ -21,6 +21,20 @@ class RootTemplateParser:
         self.tree: ET.ElementTree
         self.logger = logging.getLogger(__name__)
 
+    def get_stats_names_from_node_children(
+        self, node_children: list[ET.Element]
+    ) -> set[str]:
+        stats_names: set[str] = set()
+
+        if node_children is not None:
+            for node_child in node_children:
+                attributes = node_child.findall("attribute")
+                for attr_node in attributes:
+                    if attr_node.attrib["id"] == "Stats":
+                        stats_names.add(attr_node.attrib["value"])
+
+        return stats_names
+
     def get_unignored_nodes(self, root: ET.Element) -> list[ET.Element]:
         """
         Gets templates children and filters nodes with a DevComment set to
@@ -38,6 +52,8 @@ class RootTemplateParser:
 
                 if not has_ignored_attr:
                     unignored_nodes.append(node_child)
+
+        self.logger.info(f"Found {len(unignored_nodes)} nodes in RT")
 
         return unignored_nodes
 

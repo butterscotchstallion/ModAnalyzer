@@ -367,6 +367,7 @@
                     <attribute id="ParentTemplateId" type="FixedString" value="2874eaa0-dcc7-48c0-9d96-dc50c5149aa2" />
                     <attribute id="Stats" type="FixedString" value="OBJ_RUNE_ROF_PEACHY" />
                     <attribute id="Type" type="FixedString" value="item" />
+                    <attribute id="DevComment" type="LSString" value="Ignore" />
                     <children>
                         <node id="Tags">
                             <children>
