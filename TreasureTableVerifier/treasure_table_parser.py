@@ -48,6 +48,7 @@ class TreasureTableParser:
         object_category_name: str = ""
         tt_entry_map: dict[str, dict[str, bool]] = {}
         entry_valid = False
+        entry_options: list[int] = []
 
         self.logger.info(f"Parsing {len(lines)} lines")
 
@@ -66,6 +67,7 @@ class TreasureTableParser:
                 subtable_position = ""
                 object_category_name = ""
                 entry_valid = False
+                entry_options = []
 
             if tt_name:
                 if tt_name not in tt_map:
@@ -79,6 +81,14 @@ class TreasureTableParser:
 
                 if line.startswith("object category"):
                     object_category_name = self.get_value_from_line_in_quotes(line)
+                    last_quote_location = line.rfind('"')
+                    if last_quote_location:
+                        # 1,0,0,0,0,0,0,0
+                        option_string = line[last_quote_location + 2 : :]
+                        entry_options = [
+                            int(option) for option in option_string.split(",")
+                        ]
+                        self.logger.info(entry_options)
 
                 if object_category_name and subtable_position:
                     if tt_name not in tt_entry_map:
@@ -98,6 +108,7 @@ class TreasureTableParser:
                             subtable_position=subtable_position,
                             object_category_name=object_category_name,
                             is_valid=entry_valid,
+                            options=entry_options,
                         )
                         tt_map[tt_name].append(tt_entry)
                         tt_entry_map[tt_name][object_category_name] = True

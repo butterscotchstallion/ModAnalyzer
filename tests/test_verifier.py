@@ -80,6 +80,7 @@ def test_parse_file(treasure_table_map: dict[str, list[TreasureTableEntry]]):
 
         for entry in treasure_table_map[tt]:
             assert entry.is_valid, "Unexpected invalid entry"
+            assert len(entry.options) == 8, "No options"
 
         logger.info(f"{tt}: {tt_entry_len} entries")
 

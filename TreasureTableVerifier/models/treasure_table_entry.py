@@ -18,6 +18,7 @@ class TreasureTableEntry:
     subtable_position: str
     object_category_name: str
     is_valid: bool
+    options: list[int]
 
     def __eq__(self, other):
         return self.object_category_name == other
