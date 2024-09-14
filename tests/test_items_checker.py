@@ -11,19 +11,21 @@ logger = logging.getLogger(__name__)
 
 
 def test_check_items():
+    # Read/parse treasure tables
     reader = TreasureTableReader()
     tt_parser = TreasureTableParser()
     tt_lines = reader.read_from_file("tests/fixture/TreasureTable.txt")
     tt_map = tt_parser.parse_treasure_table(tt_lines)
     tt_summary = tt_parser.get_summary_from_tt_map(tt_map)
+    # Read/parse RTs
     rt_parser = RootTemplateParser()
     rt_xml = Path("tests/fixture/runes.lsx").read_text()
     root_node = ET.fromstring(rt_xml)
     rt_nodes = rt_parser.get_unignored_nodes(root_node)
     stats_names = rt_parser.get_stats_names_from_node_children(rt_nodes)
+    # Verify stats names against treasure tables
     checker = ItemsChecker()
     verified_items = checker.check_items(stats_names, tt_summary)
-
     items_verified = len(verified_items) == len(stats_names)
 
     if not items_verified:
