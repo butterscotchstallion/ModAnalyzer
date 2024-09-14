@@ -1,0 +1,593 @@
+<?xml version="1.0" encoding="utf-8"?>
+<save>
+    <version major="4" minor="0" revision="6" build="5" />
+    <region id="Templates">
+        <node id="Templates">
+            <children>
+                <!-- Template Rune -->
+                <node id="GameObjects">
+                    <attribute id="Description" type="TranslatedString" handle="h339303faca4d483f970a0f16c082aef5869b" version="1" />
+                    <attribute id="DisplayName" type="TranslatedString" handle="h027eef5bddf04810ab3453b01c1aba1a51fa" version="1" />
+                    <attribute id="DropSound" type="FixedString" value="1137349e-191e-cf1b-a977-dfec58897122" />
+                    <attribute id="Icon" type="FixedString" value="Item_LOOT_MF_Rune_Tablet_A" />
+                    <attribute id="ImpactSound" type="FixedString" value="ba06bceb-c096-05cd-5be1-b9dfb08e55bd" />
+                    <attribute id="InventoryMoveSound" type="FixedString" value="1137349e-191e-cf1b-a977-dfec58897122" />
+                    <attribute id="LevelName" type="FixedString" value="" />
+                    <attribute id="MapKey" type="FixedString" value="2874eaa0-dcc7-48c0-9d96-dc50c5149aa2" />
+                    <attribute id="Name" type="LSString" value="ROF_Rune_Template" />
+                    <attribute id="ParentTemplateId" type="FixedString" value="6ce06d40-aef0-405d-9860-98c0df7cbe1b" />
+                    <attribute id="PhysicsTemplate" type="FixedString" value="9a69e7bf-c84d-1cc2-aae5-772a8988bbbc" />
+                    <attribute id="PickupSound" type="FixedString" value="45a0a7d3-318a-8bf9-bfb9-5c0c1215f761" />
+                    <attribute id="Type" type="FixedString" value="item" />
+                    <attribute id="VisualTemplate" type="FixedString" value="108ef904-2f9a-f7f3-f313-c2679fcddedf" />
+                    <attribute id="maxStackAmount" type="int32" value="100" />
+                    <attribute id="DevComment" type="LSString" value="Ignore" />
+                </node>
+
+                <!-- Rune of Bone Armor -->
+                <node id="GameObjects">
+                    <attribute id="Description" type="TranslatedString" handle="h50c615750ee344f6bb28c3fcbb6adac2786c" version="1" />
+                    <attribute id="DisplayName" type="TranslatedString" handle="h4b89ac99578d49218d3bc273f15a0bdf5065" version="1" />
+                    <attribute id="Icon" type="FixedString" value="Item_LOOT_MF_Rune_Tablet_A" />
+                    <attribute id="LevelName" type="FixedString" value="" />
+                    <attribute id="MapKey" type="FixedString" value="e5e39521-2b95-4b18-b07a-dbe5f1356576" />
+                    <attribute id="Name" type="LSString" value="ROF_Rune_of_Bone_Armor" />
+                    <attribute id="ParentTemplateId" type="FixedString" value="2874eaa0-dcc7-48c0-9d96-dc50c5149aa2" />
+                    <attribute id="Stats" type="FixedString" value="OBJ_RUNE_ROF_BONE_ARMOR" />
+                    <attribute id="Type" type="FixedString" value="item" />
+                    <children>
+                        <node id="Tags">
+                            <children>
+                                <!--Rune-->
+                                <node id="Tag">
+                                    <attribute id="Object" type="guid" value="659f6688-8b4c-42f2-97c4-3485962f4a9c" />
+                                </node>
+                            </children>
+                        </node>
+                        <node id="OnUsePeaceActions">
+                            <children>
+                                <node id="Action">
+                                    <attribute id="ActionType" type="int32" value="12" />
+                                    <children>
+                                        <node id="Attributes">
+                                            <attribute id="Consume" type="bool" value="False" />
+                                            <attribute id="SkillID" type="FixedString" value="Shout_ROF_Aura_Bone_Armor" />
+                                        </node>
+                                    </children>
+                                </node>
+                            </children>
+                        </node>
+                    </children>
+                </node>
+
+                <!-- Rune of Slimy Companionship -->
+                <node id="GameObjects">
+                    <attribute id="Description" type="TranslatedString" handle="h8c39eb22a79249b098d82edb0269df6fa498" version="1" />
+                    <attribute id="DisplayName" type="TranslatedString" handle="h734eec9431f24026adeca0836a4e3f85fe56" version="1" />
+                    <attribute id="Icon" type="FixedString" value="Item_LOOT_MF_Rune_Tablet_A" />
+                    <attribute id="LevelName" type="FixedString" value="" />
+                    <attribute id="MapKey" type="FixedString" value="06fa8fd2-deb6-430e-8a47-6a73b487bbd6" />
+                    <attribute id="Name" type="LSString" value="ROF_Rune_of_Slimy_Companionship" />
+                    <attribute id="ParentTemplateId" type="FixedString" value="2874eaa0-dcc7-48c0-9d96-dc50c5149aa2" />
+                    <attribute id="Stats" type="FixedString" value="OBJ_RUNE_OF_SLIMY_COMPANIONSHIP" />
+                    <attribute id="Type" type="FixedString" value="item" />
+                    <children>
+                        <node id="Tags">
+                            <children>
+                                <!--Rune-->
+                                <node id="Tag">
+                                    <attribute id="Object" type="guid" value="659f6688-8b4c-42f2-97c4-3485962f4a9c" />
+                                </node>
+                            </children>
+                        </node>
+                        <node id="OnUsePeaceActions">
+                            <children>
+                                <node id="Action">
+                                    <attribute id="ActionType" type="int32" value="12" />
+                                    <children>
+                                        <node id="Attributes">
+                                            <attribute id="Consume" type="bool" value="False" />
+                                            <attribute id="SkillID" type="FixedString" value="Shout_ROF_Summon_Slime_Companion" />
+                                        </node>
+                                    </children>
+                                </node>
+                            </children>
+                        </node>
+                    </children>
+                </node>
+
+                <!-- Rune of Unsummoning  -->
+                <node id="GameObjects">
+                    <attribute id="Description" type="TranslatedString" handle="hc64bd8cc7fdd46eca61c1acf58536f098d3d" version="1" />
+                    <attribute id="DisplayName" type="TranslatedString" handle="h3d7503f4776f4dca8c19686d433eccdc189e" version="1" />
+                    <attribute id="Icon" type="FixedString" value="Item_LOOT_MF_Rune_Tablet_A" />
+                    <attribute id="LevelName" type="FixedString" value="" />
+                    <attribute id="MapKey" type="FixedString" value="1c373036-15d2-4cbf-9779-b38cca590a4b" />
+                    <attribute id="Name" type="LSString" value="ROF_Rune_of_Unsummoning" />
+                    <attribute id="ParentTemplateId" type="FixedString" value="2874eaa0-dcc7-48c0-9d96-dc50c5149aa2" />
+                    <attribute id="Stats" type="FixedString" value="OBJ_RUNE_ROF_UNSUMMONING" />
+                    <attribute id="Type" type="FixedString" value="item" />
+                    <children>
+                        <node id="Tags">
+                            <children>
+                                <!--Rune-->
+                                <node id="Tag">
+                                    <attribute id="Object" type="guid" value="659f6688-8b4c-42f2-97c4-3485962f4a9c" />
+                                </node>
+                            </children>
+                        </node>
+                        <node id="OnUsePeaceActions">
+                            <children>
+                                <node id="Action">
+                                    <attribute id="ActionType" type="int32" value="12" />
+                                    <children>
+                                        <node id="Attributes">
+                                            <attribute id="Consume" type="bool" value="False" />
+                                            <attribute id="SkillID" type="FixedString" value="Target_ROF_Dismiss_Summon" />
+                                        </node>
+                                    </children>
+                                </node>
+                            </children>
+                        </node>
+                    </children>
+                </node>
+
+                <!-- Rune of Temporary Amnesia  -->
+                <node id="GameObjects">
+                    <attribute id="Description" type="TranslatedString" handle="he0b8c9d169284df4bfeb7bceda0f89c0e8a7" version="1" />
+                    <attribute id="DisplayName" type="TranslatedString" handle="h9b36a091869d40809d40f8c040c4db7cg0f0" version="1" />
+                    <attribute id="Icon" type="FixedString" value="Item_LOOT_MF_Rune_Tablet_A" />
+                    <attribute id="LevelName" type="FixedString" value="" />
+                    <attribute id="MapKey" type="FixedString" value="dfda117d-598c-46bd-8a50-4df7c2ff53b6" />
+                    <attribute id="Name" type="LSString" value="ROF_Rune_of_Temporary_Amnesia" />
+                    <attribute id="ParentTemplateId" type="FixedString" value="2874eaa0-dcc7-48c0-9d96-dc50c5149aa2" />
+                    <attribute id="Stats" type="FixedString" value="OBJ_RUNE_ROF_TEMPORARY_AMNESIA" />
+                    <attribute id="Type" type="FixedString" value="item" />
+                    <children>
+                        <node id="Tags">
+                            <children>
+                                <!--Rune-->
+                                <node id="Tag">
+                                    <attribute id="Object" type="guid" value="659f6688-8b4c-42f2-97c4-3485962f4a9c" />
+                                </node>
+                            </children>
+                        </node>
+                        <node id="OnUsePeaceActions">
+                            <children>
+                                <node id="Action">
+                                    <attribute id="ActionType" type="int32" value="12" />
+                                    <children>
+                                        <node id="Attributes">
+                                            <attribute id="Consume" type="bool" value="False" />
+                                            <attribute id="SkillID" type="FixedString" value="Target_ROF_Add_Temporary_Amnesia" />
+                                        </node>
+                                    </children>
+                                </node>
+                            </children>
+                        </node>
+                    </children>
+                </node>
+
+                <!-- Blood-stained rune -->
+                <node id="GameObjects">
+                    <attribute id="Description" type="TranslatedString" handle="hf86e272f0bd64dcb99f28354c5947537ff74" version="1" />
+                    <attribute id="DisplayName" type="TranslatedString" handle="hce3c88f9860e430b93d0f5f9ed41aebe087f" version="1" />
+                    <attribute id="Icon" type="FixedString" value="Item_LOOT_MF_Rune_Tablet_A" />
+                    <attribute id="LevelName" type="FixedString" value="" />
+                    <attribute id="MapKey" type="FixedString" value="a3892610-78e3-4adf-a5d4-e55105cef4a7" />
+                    <attribute id="Name" type="LSString" value="ROF_Bloodstained_Rune" />
+                    <attribute id="ParentTemplateId" type="FixedString" value="2874eaa0-dcc7-48c0-9d96-dc50c5149aa2" />
+                    <attribute id="Stats" type="FixedString" value="OBJ_BLOODSTAINED_RUNE" />
+                    <attribute id="Type" type="FixedString" value="item" />
+                    <children>
+                        <node id="Tags">
+                            <children>
+                                <!--Rune-->
+                                <node id="Tag">
+                                    <attribute id="Object" type="guid" value="659f6688-8b4c-42f2-97c4-3485962f4a9c" />
+                                </node>
+                            </children>
+                        </node>
+                        <node id="OnUsePeaceActions">
+                            <children>
+                                <node id="Action">
+                                    <attribute id="ActionType" type="int32" value="12" />
+                                    <children>
+                                        <node id="Attributes">
+                                            <attribute id="Consume" type="bool" value="False" />
+                                            <attribute id="SkillID" type="FixedString" value="Shout_ROF_Summon_Nurse" />
+                                        </node>
+                                    </children>
+                                </node>
+                            </children>
+                        </node>
+                    </children>
+                </node>
+
+                <!-- Scarred Rune  -->
+                <node id="GameObjects">
+                    <attribute id="Description" type="TranslatedString" handle="he4537cd0bf1a4744ba3b4ca2632b3b5f033d" version="1" />
+                    <attribute id="DisplayName" type="TranslatedString" handle="h3d21d126113e4d57a6a35407938d284e15c5" version="1" />
+                    <attribute id="Icon" type="FixedString" value="Item_LOOT_MF_Rune_Tablet_A" />
+                    <attribute id="LevelName" type="FixedString" value="" />
+                    <attribute id="MapKey" type="FixedString" value="8c0b2f86-c4d6-4e64-aa12-2e6da8bfcc04" />
+                    <attribute id="Name" type="LSString" value="ROF_Scarred_Rune" />
+                    <attribute id="ParentTemplateId" type="FixedString" value="2874eaa0-dcc7-48c0-9d96-dc50c5149aa2" />
+                    <attribute id="Stats" type="FixedString" value="OBJ_SCARRED_RUNE" />
+                    <attribute id="Type" type="FixedString" value="item" />
+                    <children>
+                        <node id="Tags">
+                            <children>
+                                <!--Rune-->
+                                <node id="Tag">
+                                    <attribute id="Object" type="guid" value="659f6688-8b4c-42f2-97c4-3485962f4a9c" />
+                                </node>
+                            </children>
+                        </node>
+                        <node id="OnUsePeaceActions">
+                            <children>
+                                <node id="Action">
+                                    <attribute id="ActionType" type="int32" value="12" />
+                                    <children>
+                                        <node id="Attributes">
+                                            <attribute id="Consume" type="bool" value="False" />
+                                            <attribute id="SkillID" type="FixedString" value="Shout_ROF_Summon_Badger" />
+                                        </node>
+                                    </children>
+                                </node>
+                            </children>
+                        </node>
+                    </children>
+                </node>
+
+                <!-- Rune of Harnessed Weave  -->
+                <node id="GameObjects">
+                    <attribute id="Description" type="TranslatedString" handle="h9548784d0aad49639bf8fa17bcc6b244cgbe" version="1" />
+                    <attribute id="DisplayName" type="TranslatedString" handle="he23d08ef976541abafa58f7e4e5720e8a939" version="1" />
+                    <attribute id="Icon" type="FixedString" value="Item_LOOT_MF_Rune_Tablet_A" />
+                    <attribute id="LevelName" type="FixedString" value="" />
+                    <attribute id="MapKey" type="FixedString" value="5eca5168-c839-4a9f-8efe-6372d97727a8" />
+                    <attribute id="Name" type="LSString" value="ROF_Harnessed_Weave_Rune" />
+                    <attribute id="ParentTemplateId" type="FixedString" value="2874eaa0-dcc7-48c0-9d96-dc50c5149aa2" />
+                    <attribute id="Stats" type="FixedString" value="OBJ_HARNESSED_WEAVE_RUNE" />
+                    <attribute id="Type" type="FixedString" value="item" />
+                    <children>
+                        <node id="Tags">
+                            <children>
+                                <!--Rune-->
+                                <node id="Tag">
+                                    <attribute id="Object" type="guid" value="659f6688-8b4c-42f2-97c4-3485962f4a9c" />
+                                </node>
+                            </children>
+                        </node>
+                        <node id="OnUsePeaceActions">
+                            <children>
+                                <node id="Action">
+                                    <attribute id="ActionType" type="int32" value="12" />
+                                    <children>
+                                        <node id="Attributes">
+                                            <attribute id="Consume" type="bool" value="False" />
+                                            <attribute id="SkillID" type="FixedString" value="Target_ROF_Add_SpellSteal_Passive" />
+                                        </node>
+                                    </children>
+                                </node>
+                            </children>
+                        </node>
+                    </children>
+                </node>
+
+                <!-- Rune of Crushing Flight  -->
+                <node id="GameObjects">
+                    <attribute id="Description" type="TranslatedString" handle="ha134dfb317d841a2ba7ad44e5a3eb08c2380" version="1" />
+                    <attribute id="DisplayName" type="TranslatedString" handle="h133a5e3c113144de859c349aa83551cccd56" version="1" />
+                    <attribute id="Icon" type="FixedString" value="Item_LOOT_MF_Rune_Tablet_A" />
+                    <attribute id="LevelName" type="FixedString" value="" />
+                    <attribute id="MapKey" type="FixedString" value="6e8e7821-5a7c-4468-ab10-8be4ae8eb12a" />
+                    <attribute id="Name" type="LSString" value="ROF_Crushing_Flight_Rune" />
+                    <attribute id="ParentTemplateId" type="FixedString" value="2874eaa0-dcc7-48c0-9d96-dc50c5149aa2" />
+                    <attribute id="Stats" type="FixedString" value="OBJ_CRUSHING_FLIGHT_RUNE" />
+                    <attribute id="Type" type="FixedString" value="item" />
+                    <children>
+                        <node id="Tags">
+                            <children>
+                                <!--Rune-->
+                                <node id="Tag">
+                                    <attribute id="Object" type="guid" value="659f6688-8b4c-42f2-97c4-3485962f4a9c" />
+                                </node>
+                                <!--Enhancement Rune-->
+                                <node id="Tag">
+                                    <attribute id="Object" type="guid" value="4a349b52-43b3-4999-83af-0272b284d0d9" />
+                                </node>
+                            </children>
+                        </node>
+                        <node id="OnUsePeaceActions">
+                            <children>
+                                <node id="Action">
+                                    <attribute id="ActionType" type="int32" value="12" />
+                                    <children>
+                                        <node id="Attributes">
+                                            <attribute id="Consume" type="bool" value="False" />
+                                            <attribute id="SkillID" type="FixedString" value="Target_ROF_Add_Crushing_Flight_Passive" />
+                                        </node>
+                                    </children>
+                                </node>
+                            </children>
+                        </node>
+                    </children>
+                </node>
+
+                <!-- Rune of Mummification  -->
+                <node id="GameObjects">
+                    <attribute id="Description" type="TranslatedString" handle="hd85708658bf244ef96fcde8e20aafce3b9cf" version="1" />
+                    <attribute id="DisplayName" type="TranslatedString" handle="he6d9ce0d2e614935a6ce2ffbbe7e122281eb" version="1" />
+                    <attribute id="Icon" type="FixedString" value="Item_LOOT_MF_Rune_Tablet_A" />
+                    <attribute id="LevelName" type="FixedString" value="" />
+                    <attribute id="MapKey" type="FixedString" value="a8e01080-3948-4aa1-b1c5-1cc703e2b12d" />
+                    <attribute id="Name" type="LSString" value="ROF_Mummy_Rune" />
+                    <attribute id="ParentTemplateId" type="FixedString" value="2874eaa0-dcc7-48c0-9d96-dc50c5149aa2" />
+                    <attribute id="Stats" type="FixedString" value="OBJ_RUNE_ROF_MUMMIFICATION" />
+                    <attribute id="Type" type="FixedString" value="item" />
+                    <children>
+                        <node id="Tags">
+                            <children>
+                                <!--Rune-->
+                                <node id="Tag">
+                                    <attribute id="Object" type="guid" value="659f6688-8b4c-42f2-97c4-3485962f4a9c" />
+                                </node>
+                                <!--Enhancement Rune-->
+                                <node id="Tag">
+                                    <attribute id="Object" type="guid" value="4a349b52-43b3-4999-83af-0272b284d0d9" />
+                                </node>
+                            </children>
+                        </node>
+                        <node id="OnUsePeaceActions">
+                            <children>
+                                <node id="Action">
+                                    <attribute id="ActionType" type="int32" value="12" />
+                                    <children>
+                                        <node id="Attributes">
+                                            <attribute id="Consume" type="bool" value="False" />
+                                            <attribute id="SkillID" type="FixedString" value="Target_ROF_Mummy_Transform" />
+                                        </node>
+                                    </children>
+                                </node>
+                            </children>
+                        </node>
+                    </children>
+                </node>
+
+                <!-- Rune of Peachy  -->
+                <node id="GameObjects">
+                    <attribute id="Description" type="TranslatedString" handle="h554d58ca15d94f929b4e2ebc07448edf7db1" version="1" />
+                    <attribute id="DisplayName" type="TranslatedString" handle="heda833ecfd8649d0b1993dde37e429cag6e7" version="1" />
+                    <attribute id="Icon" type="FixedString" value="Item_LOOT_MF_Rune_Tablet_A" />
+                    <attribute id="LevelName" type="FixedString" value="" />
+                    <attribute id="MapKey" type="FixedString" value="b628cd8f-b311-4f9c-a011-1c67988177d5" />
+                    <attribute id="Name" type="LSString" value="ROF_Peachy_Rune" />
+                    <attribute id="ParentTemplateId" type="FixedString" value="2874eaa0-dcc7-48c0-9d96-dc50c5149aa2" />
+                    <attribute id="Stats" type="FixedString" value="OBJ_RUNE_ROF_PEACHY" />
+                    <attribute id="Type" type="FixedString" value="item" />
+                    <children>
+                        <node id="Tags">
+                            <children>
+                                <!--Rune-->
+                                <node id="Tag">
+                                    <attribute id="Object" type="guid" value="659f6688-8b4c-42f2-97c4-3485962f4a9c" />
+                                </node>
+                            </children>
+                        </node>
+                        <node id="OnUsePeaceActions">
+                            <children>
+                                <node id="Action">
+                                    <attribute id="ActionType" type="int32" value="12" />
+                                    <children>
+                                        <node id="Attributes">
+                                            <attribute id="Consume" type="bool" value="False" />
+                                            <attribute id="SkillID" type="FixedString" value="Shout_ROF_Peachy_Rune" />
+                                        </node>
+                                    </children>
+                                </node>
+                            </children>
+                        </node>
+                    </children>
+                </node>
+
+                <!-- Rune of Runic Reinvigoration  -->
+                <node id="GameObjects">
+                    <attribute id="Description" type="TranslatedString" handle="h4cc02705ba384a429f8925fe2b50540dca19" version="1" />
+                    <attribute id="DisplayName" type="TranslatedString" handle="hdee3ebec5ce842c3904836adf162ef6565gc" version="1" />
+                    <attribute id="Icon" type="FixedString" value="Item_LOOT_MF_Rune_Tablet_A" />
+                    <attribute id="LevelName" type="FixedString" value="" />
+                    <attribute id="MapKey" type="FixedString" value="9e8bf364-25aa-4d56-800c-11d3ceef8d73" />
+                    <attribute id="Name" type="LSString" value="ROF_Rune_of_Runic_Invigoration" />
+                    <attribute id="ParentTemplateId" type="FixedString" value="2874eaa0-dcc7-48c0-9d96-dc50c5149aa2" />
+                    <attribute id="Stats" type="FixedString" value="OBJ_RUNE_ROF_OF_RUNIC_INVIGORATION" />
+                    <attribute id="Type" type="FixedString" value="item" />
+                    <children>
+                        <node id="Tags">
+                            <children>
+                                <!--Rune-->
+                                <node id="Tag">
+                                    <attribute id="Object" type="guid" value="659f6688-8b4c-42f2-97c4-3485962f4a9c" />
+                                </node>
+                            </children>
+                        </node>
+                        <node id="OnUsePeaceActions">
+                            <children>
+                                <node id="Action">
+                                    <attribute id="ActionType" type="int32" value="12" />
+                                    <children>
+                                        <node id="Attributes">
+                                            <attribute id="Consume" type="bool" value="False" />
+                                            <attribute id="SkillID" type="FixedString" value="Shout_ROF_Apply_Runic_Invigoration_Passive" />
+                                        </node>
+                                    </children>
+                                </node>
+                            </children>
+                        </node>
+                    </children>
+                </node>
+
+                <!-- Rune of Embiggening -->
+                <node id="GameObjects">
+                    <attribute id="Description" type="TranslatedString" handle="h5d2479bc380046ce9b7692160fb1be190b48" version="1" />
+                    <attribute id="DisplayName" type="TranslatedString" handle="h07e23d59c6b9455ba4cbe649682e0b02e1b8" version="1" />
+                    <attribute id="Icon" type="FixedString" value="Item_LOOT_MF_Rune_Tablet_A" />
+                    <attribute id="LevelName" type="FixedString" value="" />
+                    <attribute id="MapKey" type="FixedString" value="f5e6c3ff-798d-481a-8983-8b9937ab1255" />
+                    <attribute id="Name" type="LSString" value="ROF_Rune_of_Embiggening" />
+                    <attribute id="ParentTemplateId" type="FixedString" value="2874eaa0-dcc7-48c0-9d96-dc50c5149aa2" />
+                    <attribute id="Stats" type="FixedString" value="OBJ_RUNE_ROF_OF_EMBIGGENING" />
+                    <attribute id="Type" type="FixedString" value="item" />
+                    <children>
+                        <node id="Tags">
+                            <children>
+                                <!--Rune-->
+                                <node id="Tag">
+                                    <attribute id="Object" type="guid" value="659f6688-8b4c-42f2-97c4-3485962f4a9c" />
+                                </node>
+                            </children>
+                        </node>
+                        <node id="OnUsePeaceActions">
+                            <children>
+                                <node id="Action">
+                                    <attribute id="ActionType" type="int32" value="12" />
+                                    <children>
+                                        <node id="Attributes">
+                                            <attribute id="Consume" type="bool" value="False" />
+                                            <attribute id="SkillID" type="FixedString" value="Target_ROF_Apply_Embiggening" />
+                                        </node>
+                                    </children>
+                                </node>
+                            </children>
+                        </node>
+                    </children>
+                </node>
+
+                <!-- Rune of Grim Renewal -->
+                <node id="GameObjects">
+                    <attribute id="Description" type="TranslatedString" handle="h3e2ff20217014d809707aa8efcae46d54e40" version="1" />
+                    <attribute id="DisplayName" type="TranslatedString" handle="h491d6729686e407198e41807417170e25dg0" version="1" />
+                    <attribute id="TechnicalDescription" type="TranslatedString" handle="h0f314e576f524aeaa6eca2dbb0d595318g2a" version="1" />
+                    <attribute id="TechnicalDescriptionParams" type="LSString" value="3d6" />
+                    <attribute id="Icon" type="FixedString" value="Item_LOOT_MF_Rune_Tablet_A" />
+                    <attribute id="LevelName" type="FixedString" value="" />
+                    <attribute id="MapKey" type="FixedString" value="c73abcd4-9ea2-4fb0-a3a8-68c7f372185c" />
+                    <attribute id="Name" type="LSString" value="" />
+                    <attribute id="ParentTemplateId" type="FixedString" value="2874eaa0-dcc7-48c0-9d96-dc50c5149aa2" />
+                    <attribute id="Stats" type="FixedString" value="OBJ_RUNE_ROF_OF_GR" />
+                    <attribute id="Type" type="FixedString" value="item" />
+                    <children>
+                        <node id="Tags">
+                            <children>
+                                <!--Rune-->
+                                <node id="Tag">
+                                    <attribute id="Object" type="guid" value="659f6688-8b4c-42f2-97c4-3485962f4a9c" />
+                                </node>
+                            </children>
+                        </node>
+                        <node id="OnUsePeaceActions">
+                            <children>
+                                <node id="Action">
+                                    <attribute id="ActionType" type="int32" value="12" />
+                                    <children>
+                                        <node id="Attributes">
+                                            <attribute id="Consume" type="bool" value="False" />
+                                            <attribute id="SkillID" type="FixedString" value="Target_ROF_Apply_Grim_Renewal" />
+                                        </node>
+                                    </children>
+                                </node>
+                            </children>
+                        </node>
+                    </children>
+                </node>
+
+                <!-- Rune pouch -->
+                <node id="GameObjects">
+                    <attribute id="ContainerAutoAddOnPickup" type="bool" value="True" />
+                    <attribute id="ContainerContentFilterCondition" type="LSString" value="Tagged('ROF_RUNE')" />
+                    <attribute id="CastShadow" type="bool" value="False" />
+                    <attribute id="Description" type="TranslatedString" handle="h02b65302bbf640a6a43dabd65cba1c4b8372" version="1" />
+                    <attribute id="DisplayName" type="TranslatedString" handle="hec70078fbe224315b3353c0c607c3805488e" version="1" />
+                    <attribute id="Icon" type="FixedString" value="Item_CONT_GEN_Pouch_Leather_Old_A" />
+                    <attribute id="InventoryType" type="uint8" value="11" />
+                    <attribute id="LevelName" type="FixedString" value="" />
+                    <attribute id="MapKey" type="FixedString" value="74477542-5ad9-4907-9c1d-e9ef90b26b06" />
+                    <attribute id="Name" type="LSString" value="ROF_Rune_Pouch" />
+                    <attribute id="ParentTemplateId" type="FixedString" value="ea8cc72a-e078-4ce7-bd63-14bcf1851f46" />
+                    <attribute id="PhysicsTemplate" type="FixedString" value="68e81f6a-8ba8-7a9e-9d5b-f6104c13903b" />
+                    <attribute id="RecieveDecal" type="bool" value="False" />
+                    <attribute id="Stats" type="FixedString" value="OBJ_ROF_RUNE_POUCH" />
+                    <attribute id="Tooltip" type="uint8" value="2" />
+                    <attribute id="Type" type="FixedString" value="item" />
+                    <attribute id="VisualTemplate" type="FixedString" value="fe8ff285-0cff-ee51-4513-9768ac646e46" />
+                    <attribute id="WalkThrough" type="bool" value="True" />
+                    <children>
+                        <node id="InventoryList">
+                            <children>
+                                <node id="InventoryItem">
+                                    <attribute id="Object" type="FixedString" value="OBJ_ROF_RUNE_POUCH_TT" />
+                                </node>
+                            </children>
+                        </node>
+                        <node id="Bounds">
+                            <children>
+                                <node id="Bound">
+                                    <attribute id="Height" type="float" value="0.448918" />
+                                    <attribute id="Max" type="fvec3" value="0.18665761 0.08201054 0.086278826" />
+                                    <attribute id="Min" type="fvec3" value="-0.1605246 -0.00021844357 -0.09821212" />
+                                    <attribute id="Radius" type="float" value="0.0960515" />
+                                    <attribute id="Shape" type="uint8" value="1" />
+                                    <attribute id="Type" type="uint8" value="0" />
+                                </node>
+                                <node id="Bound">
+                                    <attribute id="Height" type="float" value="0.448918" />
+                                    <attribute id="Max" type="fvec3" value="0.18665761 0.08201054 0.086278826" />
+                                    <attribute id="Min" type="fvec3" value="-0.1605246 -0.00021844357 -0.09821212" />
+                                    <attribute id="Radius" type="float" value="0.192103" />
+                                    <attribute id="Shape" type="uint8" value="1" />
+                                    <attribute id="Type" type="uint8" value="1" />
+                                </node>
+                                <node id="Bound">
+                                    <attribute id="Height" type="float" value="0.448918" />
+                                    <attribute id="Max" type="fvec3" value="0.18665761 0.08201054 0.086278826" />
+                                    <attribute id="Min" type="fvec3" value="-0.1605246 -0.00021844357 -0.09821212" />
+                                    <attribute id="Radius" type="float" value="0.192103" />
+                                    <attribute id="Shape" type="uint8" value="1" />
+                                    <attribute id="Type" type="uint8" value="2" />
+                                </node>
+                            </children>
+                        </node>
+                        <node id="OnDestroyActions">
+                            <children>
+                                <node id="Action">
+                                    <attribute id="ActionType" type="int32" value="26" />
+                                    <children>
+                                        <node id="Attributes">
+                                            <attribute id="ActivateSoundEvent" type="FixedString" value="3ea82655-5140-4287-9ab8-794559f182d3" />
+                                            <attribute id="Animation" type="FixedString" value="" />
+                                            <attribute id="Conditions" type="LSString" value="" />
+                                            <attribute id="PlayOnHUD" type="bool" value="False" />
+                                        </node>
+                                    </children>
+                                </node>
+                            </children>
+                        </node>
+                        <node id="Tags">
+                            <children>
+                                <node id="Tag">
+                                    <attribute id="Object" type="guid" value="9b6f9531-c2d3-47b2-9153-861425152eb3" />
+                                </node>
+                                <node id="Tag">
+                                    <attribute id="Object" type="guid" value="3d942aee-430d-4204-85e4-3ca0a1e0e7ac" />
+                                </node>
+                            </children>
+                        </node>
+                    </children>
+                </node>
+
+                <!-- End of nodes -->
+            </children>
+        </node>
+    </region>
+</save>

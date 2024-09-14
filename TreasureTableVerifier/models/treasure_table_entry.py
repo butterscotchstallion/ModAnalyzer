@@ -18,6 +18,7 @@ class TreasureTableEntry:
     subtable_position: str
     object_category_name: str
     is_valid: bool
+    # Vestige of DoS2 but none of this does anything
     options: list[int]
 
     def __eq__(self, other):
