@@ -88,7 +88,6 @@ class TreasureTableParser:
                         entry_options = [
                             int(option) for option in option_string.split(",")
                         ]
-                        self.logger.info(entry_options)
 
                 if object_category_name and subtable_position:
                     if tt_name not in tt_entry_map:
