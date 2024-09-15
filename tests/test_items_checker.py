@@ -2,10 +2,12 @@ import logging
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
-from TreasureTableVerifier.items_checker import ItemsChecker
-from TreasureTableVerifier.root_template_parser import RootTemplateParser
-from TreasureTableVerifier.treasure_table_parser import TreasureTableParser
-from TreasureTableVerifier.treasure_table_reader import TreasureTableReader
+from TreasureTableVerifier import (
+    ItemsChecker,
+    RootTemplateParser,
+    TreasureTableParser,
+    TreasureTableReader,
+)
 
 logger = logging.getLogger(__name__)
 

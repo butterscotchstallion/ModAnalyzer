@@ -3,10 +3,6 @@ import logging
 from TreasureTableVerifier.models import TreasureTableEntry
 
 
-class InvalidTreasureTableEntryException(Exception):
-    pass
-
-
 class TreasureTableParser:
     """
     Parses Treasure Table files
