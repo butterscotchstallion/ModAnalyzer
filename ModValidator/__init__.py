@@ -1,1 +1,1 @@
-from .mod_structure_validator import ModStructureValidator  # noqa: F401
+from .mod_validator import ModValidator  # noqa: F401
