@@ -31,6 +31,8 @@ new subtable "1,1"
 object category "I_OBJ_RUNE_ROF_OF_RUNIC_INVIGORATION",1,0,0,0,0,0,0,0
 new subtable "1,1"
 object category "I_OBJ_RUNE_ROF_TEMPORARY_AMNESIA",1,0,0,0,0,0,0,0
+new subtable "1,1"
+object category "I_OBJ_ROF_RUNE_POUCH",1,0,0,0,0,0,0,0
 
 new treasuretable "DIGGING_CHESTS"
 CanMerge 1
@@ -46,6 +48,8 @@ new subtable "1,1"
 object category "I_OBJ_RUNE_ROF_OF_RUNIC_INVIGORATION",1,0,0,0,0,0,0,0
 new subtable "1,1"
 object category "I_OBJ_RUNE_ROF_TEMPORARY_AMNESIA",1,0,0,0,0,0,0,0
+new subtable "1,1"
+object category "I_OBJ_ROF_RUNE_POUCH",1,0,0,0,0,0,0,0
 
 new treasuretable "Exploration_Major_Scroll"
 CanMerge 1
@@ -85,6 +89,8 @@ new subtable "1,1"
 object category "I_ROF_Duplicitous_Bow",1,0,0,0,0,0,0,0
 new subtable "1,1"
 object category "I_OBJ_RUNE_ROF_OF_EMBIGGENING",1,0,0,0,0,0,0,0
+new subtable "1,1"
+object category "I_OBJ_ROF_RUNE_POUCH",1,0,0,0,0,0,0,0
 
 // Bloodstained Rune //
  new treasuretable "TWN_Surgeon_Treasure"
@@ -323,6 +329,8 @@ new subtable "1,1"
 object category "I_OBJ_RUNE_ROF_TEMPORARY_AMNESIA",1,0,0,0,0,0,0,0
 new subtable "1,1"
 object category "I_OBJ_RUNE_ROF_OF_GR",1,0,0,0,0,0,0,0
+new subtable "1,1"
+object category "I_OBJ_ROF_RUNE_POUCH",1,0,0,0,0,0,0,0
 
 new treasuretable "WYR_Refugee_Belongings"
 CanMerge 1
@@ -330,6 +338,8 @@ new subtable "1,1"
 object category "I_OBJ_RUNE_ROF_TEMPORARY_AMNESIA",1,0,0,0,0,0,0,0
 new subtable "1,1"
 object category "I_OBJ_RUNE_ROF_OF_GR",1,0,0,0,0,0,0,0
+new subtable "1,1"
+object category "I_OBJ_ROF_RUNE_POUCH",1,0,0,0,0,0,0,0
 
 new treasuretable "UND_ZhentPort_LockedCargo"
 CanMerge 1
