@@ -2,7 +2,7 @@ import logging
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
-from TreasureTableVerifier import (
+from ModAnalyzer.TreasureTable import (
     ItemsChecker,
     RootTemplateParser,
     TreasureTableParser,

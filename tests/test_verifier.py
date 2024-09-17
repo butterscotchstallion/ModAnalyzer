@@ -2,8 +2,8 @@ import logging
 
 import pytest
 
-from TreasureTableVerifier import TreasureTableParser, TreasureTableReader
-from TreasureTableVerifier.models.treasure_table_entry import TreasureTableEntry
+from ModAnalyzer.TreasureTable import TreasureTableParser, TreasureTableReader
+from ModAnalyzer.TreasureTable.models import TreasureTableEntry
 
 parser = TreasureTableParser()
 reader = TreasureTableReader()

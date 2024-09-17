@@ -4,8 +4,8 @@ from pathlib import Path
 
 import pytest
 
-from TreasureTableVerifier.root_template_parser import RootTemplateParser
-from TreasureTableVerifier.xml_utils import attr_is_ignore_comment
+from ModAnalyzer.TreasureTable.root_template_parser import RootTemplateParser
+from ModAnalyzer.TreasureTable.xml_utils import attr_is_ignore_comment
 
 logger = logging.getLogger(__name__)
 

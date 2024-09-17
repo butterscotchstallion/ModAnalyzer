@@ -1,6 +1,6 @@
 import logging
 
-from TreasureTableVerifier.models import TreasureTableEntry
+from ModAnalyzer.TreasureTable.models import TreasureTableEntry
 
 
 class TreasureTableParser:
