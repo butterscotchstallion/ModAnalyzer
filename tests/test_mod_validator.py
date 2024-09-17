@@ -3,7 +3,7 @@ import logging
 import pprint
 from pathlib import Path
 
-import ModValidator
+import ModAnalyzer
 
 logger = logging.getLogger(__file__)
 
@@ -13,7 +13,7 @@ def test_get_dirs():
     Tests assembling of various dir paths
     """
     dirs = json.loads(Path("tests/fixture/dirs.json").read_text())
-    validator = ModValidator.ModValidator()
+    validator = ModAnalyzer.ModAnalyzer()
     report = validator.validate("RunesOfFaerun", dirs)
 
     pprint.pp(report)

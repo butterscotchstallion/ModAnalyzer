@@ -5,7 +5,7 @@ from pathlib import Path
 
 
 @dataclass
-class ModValidatorReport:
+class ModAnalyzerReport:
     # Directories
     # TODO: rename this to root dir maybe?
     has_mods_modname: bool = False
@@ -16,7 +16,7 @@ class ModValidatorReport:
     has_root_templates: bool = False
 
 
-class ModValidator:
+class ModAnalyzer:
     """
     Verifies the directory structure of a
     mod.
@@ -45,7 +45,7 @@ class ModValidator:
 
     def validate(
         self, mod_dir_name: str, mod_dirs_override: list[str] | None = None
-    ) -> ModValidatorReport:
+    ) -> ModAnalyzerReport:
         """
         Main entry method containing various checks.
 
@@ -65,7 +65,7 @@ class ModValidator:
             mod_dirs_paths: list[Path] = self.get_mod_dirs(Path(mod_dir_name))
             mod_dirs: list[str] = [str(d) for d in mod_dirs_paths]
 
-        report = ModValidatorReport()
+        report = ModAnalyzerReport()
         report.has_mods_modname = self.has_mods_modname(mod_dirs)
 
         if not report.has_mods_modname:
