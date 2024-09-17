@@ -13,8 +13,8 @@ def test_get_dirs():
     Tests assembling of various dir paths
     """
     dirs = json.loads(Path("tests/fixture/dirs.json").read_text())
-    validator = ModAnalyzer.ModAnalyzer()
-    report = validator.validate("RunesOfFaerun", dirs)
+    analyzer = ModAnalyzer.ModAnalyzer()
+    report = analyzer.analyze("RunesOfFaerun", dirs)
 
     pprint.pp(report)
 

@@ -43,7 +43,7 @@ class ModAnalyzer:
     def __init__(self):
         self.logger = logging.getLogger(__file__)
 
-    def validate(
+    def analyze(
         self, mod_dir_name: str, mod_dirs_override: list[str] | None = None
     ) -> ModAnalyzerReport:
         """

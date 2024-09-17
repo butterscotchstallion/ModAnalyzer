@@ -13,5 +13,5 @@ args = parser.parse_args()
 
 if __name__ == "__main__":
     if args.mod_directory:
-        validator = ModAnalyzer()
-        report = validator.validate(args.mod_directory)
+        analyzer = ModAnalyzer()
+        report = analyzer.analyze(args.mod_directory)
