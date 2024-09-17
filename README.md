@@ -1,7 +1,7 @@
-# TreasureTableVerifier
-Parses and verifies treasure table entries for Baldur's Gate 3
+# ModAnalyzer
+Analyzes BG3 mods to find problems and fix them
 
 ## Tests
-`source .venv/Scripts/activate`
-`uv sync`
-`python -m pytest`
+- `source .venv/Scripts/activate`
+- `uv sync`
+- `python -m pytest`
