@@ -1,6 +1,6 @@
 from argparse import ArgumentParser
 
-from ModAnalyzer import ModAnalyzer
+from ModAnalyzer import Analyzer
 
 parser = ArgumentParser(
     prog="Mod Analyzer",
@@ -13,5 +13,5 @@ args = parser.parse_args()
 
 if __name__ == "__main__":
     if args.mod_directory:
-        analyzer = ModAnalyzer()
+        analyzer = Analyzer()
         report = analyzer.analyze(args.mod_directory)

@@ -5,7 +5,7 @@ from pathlib import Path
 
 
 @dataclass
-class ModAnalyzerReport:
+class StructureReport:
     # Directories
     # TODO: rename this to root dir maybe?
     has_mods_modname: bool = False
@@ -14,9 +14,10 @@ class ModAnalyzerReport:
     # Files
     has_meta_file: bool = False
     has_root_templates: bool = False
+    has_treasure_table: bool = False
 
 
-class ModAnalyzer:
+class StructureAnalyzer:
     """
     Verifies the directory structure of a
     mod.
@@ -42,10 +43,11 @@ class ModAnalyzer:
 
     def __init__(self):
         self.logger = logging.getLogger(__file__)
+        self.mod_dir_name = ""
 
-    def analyze(
+    def generate_report(
         self, mod_dir_name: str, mod_dirs_override: list[str] | None = None
-    ) -> ModAnalyzerReport:
+    ) -> StructureReport:
         """
         Main entry method containing various checks.
 
@@ -60,12 +62,16 @@ class ModAnalyzer:
 
         # Used in test
         if mod_dirs_override:
+            if len(mod_dirs_override) == 0:
+                raise ValueError(
+                    "Empty mod dirs supplied to StructureAnalyzer.generate_report"
+                )
             mod_dirs = mod_dirs_override
         else:
             mod_dirs_paths: list[Path] = self.get_mod_dirs(Path(mod_dir_name))
             mod_dirs: list[str] = [str(d) for d in mod_dirs_paths]
 
-        report = ModAnalyzerReport()
+        report = StructureReport()
         report.has_mods_modname = self.has_mods_modname(mod_dirs)
 
         if not report.has_mods_modname:
@@ -79,6 +85,7 @@ class ModAnalyzer:
         report.has_public = self.has_public(mod_dirs)
         report.has_mod_fixer = self.has_mod_fixer(mod_dirs)
         report.has_root_templates = self.has_root_templates(mod_dirs)
+        report.has_treasure_table = self.has_treasure_table(mod_dirs)
 
         return report
 
@@ -98,10 +105,26 @@ class ModAnalyzer:
     def get_public_path(self) -> str:
         return os.path.join(self.mod_dir_name, "Public")
 
+    def get_stats_path(self) -> str:
+        dir_parts = [self.get_public_path(), self.mod_dir_name, "Stats"]
+        return os.path.join(*dir_parts)
+
+    def get_generated_path(self) -> str:
+        return os.path.join(self.get_stats_path(), "Generated")
+
+    def get_treasure_table_file_path(self) -> str:
+        return os.path.join(self.get_generated_path(), "TreasureTable.txt")
+
+    def get_rt_dir(self) -> str:
+        rt_dir_parts = [self.get_public_path(), self.mod_dir_name, "RootTemplates"]
+        return os.path.join(*rt_dir_parts)
+
+    def get_rt_dir_path(self) -> Path:
+        return Path(self.get_rt_dir())
+
     def get_root_templates(self) -> list[Path]:
         rts: list[Path] = []
-        rt_path_parts = [self.get_public_path(), self.mod_dir_name, "RootTemplates"]
-        rt_dir = Path(os.path.join(*rt_path_parts))
+        rt_dir = self.get_rt_dir_path()
         if os.path.isdir(rt_dir):
             self.logger.info("RootTemplates dir exists")
             rts = self.get_lsx_files_in_dir(rt_dir)
@@ -117,6 +140,10 @@ class ModAnalyzer:
     # Directory checks              #
     #################################
 
+    def has_treasure_table(self, mod_dirs: list[str]) -> bool:
+        tt_path = self.get_treasure_table_file_path()
+        return self.is_path_in_mod_dirs(mod_dirs, tt_path)
+
     def has_mods_modname(self, mod_dirs: list[str]) -> bool:
         return self.is_path_in_mod_dirs(mod_dirs, self.get_mods_modname_path())
 
@@ -131,9 +158,6 @@ class ModAnalyzer:
         mods_base_path = self.get_mods_modname_path()
         meta_path = os.path.join(mods_base_path, "meta.lsx")
         meta_mt_path = os.path.join(mods_base_path, "meta.lsf.lsx")
-
-        self.logger.info(f"meta path: {meta_path}")
-        self.logger.info(f"meta_mt path: {meta_mt_path}")
 
         # Maybe glob this
         meta_exists = self.is_path_in_mod_dirs(mod_dirs, meta_path)

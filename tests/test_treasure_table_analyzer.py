@@ -2,21 +2,41 @@ import logging
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
+from ModAnalyzer import Structure
 from ModAnalyzer.TreasureTable import (
-    ItemsChecker,
     RootTemplateParser,
+    TreasureTableAnalyzer,
     TreasureTableParser,
     TreasureTableReader,
 )
+from tests.conftest import FIXTURE_PATHS
 
 logger = logging.getLogger(__name__)
+
+
+def test_generate_report(mod_dirs_fixture: list[str]):
+    structure_analyzer = Structure.StructureAnalyzer()
+    structure_report = structure_analyzer.generate_report("TestMod", mod_dirs_fixture)
+
+    tt_filename = structure_analyzer.get_treasure_table_file_path()
+    rt_dir = structure_analyzer.get_rt_dir()
+
+    assert structure_report.has_treasure_table, f"No treasure table at {tt_filename}"
+
+    if structure_report.has_treasure_table:
+        treasure_table_analyzer = TreasureTableAnalyzer()
+        tt_report = treasure_table_analyzer.generate_report(tt_filename, rt_dir)
+
+        assert tt_report.total_items == 14
+        assert len(tt_report.verified_items) == 14
+        assert len(tt_report.treasure_table_entries) == 14
 
 
 def test_check_items():
     # Read/parse treasure tables
     reader = TreasureTableReader()
     tt_parser = TreasureTableParser()
-    tt_lines = reader.read_from_file("tests/fixture/TreasureTable.txt")
+    tt_lines = reader.read_from_file(FIXTURE_PATHS["TREASURE_TABLE"])
     tt_map = tt_parser.parse_treasure_table(tt_lines)
     tt_summary = tt_parser.get_summary_from_tt_map(tt_map)
     # Read/parse RTs
@@ -26,7 +46,7 @@ def test_check_items():
     rt_nodes = rt_parser.get_unignored_nodes(root_node)
     stats_names = rt_parser.get_stats_names_from_node_children(rt_nodes)
     # Verify stats names against treasure tables
-    checker = ItemsChecker()
+    checker = TreasureTableAnalyzer()
     verified_items = checker.check_items(stats_names, tt_summary)
     items_verified = len(verified_items) == len(stats_names)
 

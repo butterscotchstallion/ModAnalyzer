@@ -1,1 +1,1 @@
-from .mod_analyzer import ModAnalyzer  # noqa: F401
+from .analyzer import Analyzer  # noqa: F401

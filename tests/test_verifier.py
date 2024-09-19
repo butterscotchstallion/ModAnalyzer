@@ -4,6 +4,7 @@ import pytest
 
 from ModAnalyzer.TreasureTable import TreasureTableParser, TreasureTableReader
 from ModAnalyzer.TreasureTable.models import TreasureTableEntry
+from tests.conftest import FIXTURE_PATHS
 
 parser = TreasureTableParser()
 reader = TreasureTableReader()
@@ -25,7 +26,7 @@ def get_tt_map(file_path: str):
 
 @pytest.fixture(scope="session")
 def treasure_table_map():
-    tt_map = get_tt_map("tests/fixture/TreasureTable.txt")
+    tt_map = get_tt_map(FIXTURE_PATHS["TREASURE_TABLE"])
     assert len(tt_map.keys()) == 29
     yield tt_map
 
