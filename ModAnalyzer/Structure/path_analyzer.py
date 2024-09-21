@@ -65,6 +65,11 @@ class PathAnalyzer:
                 color = bcolors.OKGREEN
                 existent_paths.append(p)
 
+            if os.path.isfile(test_path):
+                color = bcolors.OKCYAN
+
+            self.logger.debug(f"{color}{p}: {exists}{bcolors.ENDC}")
+
             path_with_colors = f"{color}{p}{bcolors.ENDC}"
             report.paths[p] = {"exists": exists, "path_with_color": path_with_colors}
             colored_paths.append(path_with_colors)

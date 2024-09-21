@@ -56,7 +56,7 @@ class TreasureTableAnalyzer:
                             self.logger.debug(f"Added {len(dir_nodes)} from {rt}")
                         else:
                             self.logger.error(
-                                f"TreasureTableAnalyzer: {self.path_analyzer.get_colored_path(str(rt))} does not exist"
+                                f"TreasureTableAnalyzer: {self.path_analyzer.get_colored_path(str(rt_path))} does not exist"
                             )
                 else:
                     self.logger.error(

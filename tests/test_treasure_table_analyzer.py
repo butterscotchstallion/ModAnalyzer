@@ -11,7 +11,7 @@ from ModAnalyzer.TreasureTable import (
 )
 from tests.conftest import FIXTURE_PATHS
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("TestTreasureTableAnalyzer")
 
 
 def test_generate_report(mod_dirs_fixture: list[str]):
