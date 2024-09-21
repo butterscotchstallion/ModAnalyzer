@@ -4,6 +4,7 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 
 from ModAnalyzer import Structure, TreasureTable
+from ModAnalyzer.Structure.path_analyzer import PathAnalyzer
 
 
 class TreasureTableReport:
@@ -18,8 +19,12 @@ class TreasureTableAnalyzer:
     treasure table
     """
 
+    path_analyzer: PathAnalyzer
+    logger: logging.Logger
+
     def __init__(self):
         self.logger = logging.getLogger(__name__)
+        self.path_analyzer = PathAnalyzer()
 
     def get_item_list(
         self, rt_parser: TreasureTable.RootTemplateParser, rt_dir: str
@@ -50,13 +55,17 @@ class TreasureTableAnalyzer:
 
                             self.logger.debug(f"Added {len(dir_nodes)} from {rt}")
                         else:
-                            self.logger.error(f"{__class__}: Could not read {rt}")
+                            self.logger.error(
+                                f"TreasureTableAnalyzer: {self.path_analyzer.get_colored_path(str(rt))} does not exist"
+                            )
                 else:
-                    self.logger.error(f"{__class__}: cannot find any RTs in {rt_dir}")
+                    self.logger.error(
+                        f"TreasureTableAnalyzer: cannot find any RTs in {rt_dir}"
+                    )
             else:
-                self.logger.error(f"{__class__}: cannot find RT dir {rt_dir}")
+                self.logger.error(f"TreasureTableAnalyzer: cannot find RT dir {rt_dir}")
         except Exception as err:
-            self.logger.error(f"{__class__}: Unexpected exception: {err}")
+            self.logger.error(f"TreasureTableAnalyzer: Unexpected exception: {err}")
         finally:
             return nodes
 

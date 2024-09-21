@@ -41,7 +41,7 @@ def test_check_items():
     tt_summary = tt_parser.get_summary_from_tt_map(tt_map)
     # Read/parse RTs
     rt_parser = RootTemplateParser()
-    rt_xml = Path("tests/fixture/runes.lsx").read_text()
+    rt_xml = Path(FIXTURE_PATHS["ROOT_TEMPLATE"]).read_text()
     root_node = ET.fromstring(rt_xml)
     rt_nodes = rt_parser.get_unignored_nodes(root_node)
     stats_names = rt_parser.get_stats_names_from_node_children(rt_nodes)

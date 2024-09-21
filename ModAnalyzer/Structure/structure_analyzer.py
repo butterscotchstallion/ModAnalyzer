@@ -46,7 +46,9 @@ class StructureAnalyzer:
         self.mod_dir_name = ""
 
     def generate_report(
-        self, mod_dir_name: str, mod_dirs_override: list[str] | None = None
+        self,
+        mod_dir_name: str,
+        mod_dirs_override: list[str] | None = None,
     ) -> StructureReport:
         """
         Main entry method containing various checks.
@@ -67,6 +69,9 @@ class StructureAnalyzer:
                     "Empty mod dirs supplied to StructureAnalyzer.generate_report"
                 )
             mod_dirs = mod_dirs_override
+            for d in mod_dirs_override:
+                if "Treasure" in d:
+                    self.logger.info(f"mod_dirs tt path = {d}")
         else:
             mod_dirs_paths: list[Path] = self.get_mod_dirs(Path(mod_dir_name))
             mod_dirs: list[str] = [str(d) for d in mod_dirs_paths]
@@ -145,7 +150,8 @@ class StructureAnalyzer:
         return self.is_path_in_mod_dirs(mod_dirs, tt_path)
 
     def has_mods_modname(self, mod_dirs: list[str]) -> bool:
-        return self.is_path_in_mod_dirs(mod_dirs, self.get_mods_modname_path())
+        path = self.get_mods_modname_path()
+        return self.is_path_in_mod_dirs(mod_dirs, path)
 
     def has_public(self, mod_dirs: list[str]) -> bool:
         public_path = self.get_public_path()
@@ -162,6 +168,7 @@ class StructureAnalyzer:
         # Maybe glob this
         meta_exists = self.is_path_in_mod_dirs(mod_dirs, meta_path)
         meta_mt_exists = self.is_path_in_mod_dirs(mod_dirs, meta_mt_path)
+
         return meta_exists or meta_mt_exists
 
     def has_root_templates(self, mod_dirs: list[str]) -> bool:

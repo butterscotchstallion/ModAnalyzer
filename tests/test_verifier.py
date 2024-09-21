@@ -83,7 +83,7 @@ def test_parse_file(treasure_table_map: dict[str, list[TreasureTableEntry]]):
             assert entry.is_valid, "Unexpected invalid entry"
             assert len(entry.options) == 8, "No options"
 
-        logger.debug(f"{tt}: {tt_entry_len} entries")
+        # logger.debug(f"{tt}: {tt_entry_len} entries")
 
 
 def test_treasure_table_summary(
@@ -98,9 +98,11 @@ def test_treasure_table_summary(
             len(summary[obj_category_name]) > 0
         ), f"{obj_category_name} is not in at least 1 TT"
 
+        """
         logger.debug(
             f"{obj_category_name} is in {len(summary[obj_category_name])} tables"
         )
+        """
 
 
 def test_invalid_tt_entry():

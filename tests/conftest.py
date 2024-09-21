@@ -16,10 +16,6 @@ def mod_dirs_fixture():
 
 
 FIXTURE_PATHS = {
-    "TREASURE_TABLE": "tests/fixture/TestMod/Public/TestMod/Stats/Generated/TreasureTable.txt"
+    "TREASURE_TABLE": "TestMod/Public/TestMod/Stats/Generated/TreasureTable.txt",
+    "ROOT_TEMPLATE": "TestMod/Public/TestMod/RootTemplates/runes.lsx",
 }
-"""
-def get_mod_dirs_fixture():
-    logger.info("Loading mod dirs fixture")
-    return json.loads(Path("tests/fixture/dirs.json").read_text())
-"""

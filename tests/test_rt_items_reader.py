@@ -6,13 +6,14 @@ import pytest
 
 from ModAnalyzer.TreasureTable.root_template_parser import RootTemplateParser
 from ModAnalyzer.TreasureTable.xml_utils import attr_is_ignore_comment
+from tests.conftest import FIXTURE_PATHS
 
 logger = logging.getLogger(__name__)
 
 
 @pytest.fixture(scope="session")
 def node_children():
-    runes_xml: str = Path("tests/fixture/runes.lsx").read_text()
+    runes_xml: str = Path(FIXTURE_PATHS["ROOT_TEMPLATE"]).read_text()
 
     assert runes_xml, "Failed to read XML file"
 
