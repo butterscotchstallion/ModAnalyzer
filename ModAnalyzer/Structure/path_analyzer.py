@@ -51,6 +51,7 @@ class PathAnalyzer:
         path_parts = path.split(os.sep)
         colored_paths = []
         existent_paths = []
+        encountered_non_existent_dir = False
 
         for p in path_parts:
             exists = False
@@ -60,15 +61,18 @@ class PathAnalyzer:
             if len(existent_paths) > 0:
                 test_path = os.path.join(*existent_paths, p)
 
-            if os.path.exists(test_path):
+            if not encountered_non_existent_dir and os.path.exists(test_path):
                 exists = True
                 color = bcolors.OKGREEN
                 existent_paths.append(p)
+            else:
+                encountered_non_existent_dir = True
 
-            if os.path.isfile(test_path):
-                color = bcolors.OKCYAN
+            # if os.path.isfile(test_path):
+            #    color = bcolors.OKCYAN
 
-            self.logger.debug(f"{color}{p}: {exists}{bcolors.ENDC}")
+            # The file shows as existent here because we are testing the whole path
+            # self.logger.debug(f"{color}{p}: {exists}{bcolors.ENDC}")
 
             path_with_colors = f"{color}{p}{bcolors.ENDC}"
             report.paths[p] = {"exists": exists, "path_with_color": path_with_colors}

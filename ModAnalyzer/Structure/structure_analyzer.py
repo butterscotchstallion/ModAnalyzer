@@ -71,7 +71,7 @@ class StructureAnalyzer:
             mod_dirs = mod_dirs_override
             for d in mod_dirs_override:
                 if "Treasure" in d:
-                    self.logger.info(f"mod_dirs tt path = {d}")
+                    self.logger.debug(f"mod_dirs tt path = {d}")
         else:
             mod_dirs_paths: list[Path] = self.get_mod_dirs(Path(mod_dir_name))
             mod_dirs: list[str] = [str(d) for d in mod_dirs_paths]
