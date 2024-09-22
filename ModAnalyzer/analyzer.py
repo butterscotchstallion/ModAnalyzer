@@ -1,5 +1,6 @@
 import os
 import pprint
+import xml.etree.ElementTree as ET
 
 import typer
 from tabulate import tabulate
@@ -69,6 +70,22 @@ class Analyzer:
 
         typer.echo(os.linesep)
 
+    def get_list_of_ignored_items(self, items: list[ET.Element]) -> str:
+        names: list[str] = []
+        output = ""
+        for item in items:
+            attributes = item.findall("attribute")
+
+            # Get ignored nodes
+            for attr_node in attributes:
+                if "id" in attr_node.attrib and attr_node.attrib["id"] == "Name":
+                    names.append(attr_node.attrib["value"])
+
+        if len(names) > 0:
+            output = ", ".join(names)
+
+        return output
+
     def analyze(self, mod_dir: str, **kwargs):
         # Structure report
         structure_analyzer = Structure.StructureAnalyzer()
@@ -77,8 +94,8 @@ class Analyzer:
         if "debug_mode" in kwargs and kwargs["debug_mode"]:
             self.print_debug_info(structure_analyzer)
 
-        headers = ["Subject", "Status", "Notes"]
-        summary_table = [
+        headers = ["Mod Structure Report", "Status", "Notes"]
+        structure_report_table: list[list[str]] = [
             [
                 f'"{mod_dir}" exists',
                 self.get_colored_status(structure_report.mod_dir_exists),
@@ -113,6 +130,8 @@ class Analyzer:
             ],
         ]
 
+        typer.echo(tabulate(structure_report_table, headers=headers))
+
         if structure_report.mod_dir_exists:
             # Treasure table report
             if structure_report.has_treasure_table:
@@ -121,12 +140,61 @@ class Analyzer:
                 tt_report = self.get_tt_report(tt_filename, rt_dir)
 
                 """
-                summary_table[0].append(
-                    [""]
-                )
+                valid_items: list[ET.Element] = []
+                ignored_items: list[ET.Element] = []
+                treasure_table_entries: list[TreasureTableEntry] = []
+                inaccessible_items: list[str] = []
                 """
+                num_valid_items = len(tt_report.valid_items)
+                tt_report_table = []
+                tt_report_table.append(
+                    [
+                        "Valid treasure items",
+                        self.get_colored_status(True, ok_str="OK", fail_str="FAIL"),
+                        f"{str(num_valid_items)} items present in treasure tables",
+                    ]
+                )
 
-        typer.echo(tabulate(summary_table, headers=headers))
+                num_ignored = len(tt_report.ignored_items)
+                ignored_items_csv = self.get_list_of_ignored_items(
+                    tt_report.ignored_items
+                )
+                ignored_items_with_paren = (
+                    f"({ignored_items_csv})" if ignored_items_csv else ""
+                )
+                tt_report_table.append(
+                    [
+                        "Ignored treasure items",
+                        # This isn't really ok/fail
+                        self.get_colored_status(True, ok_str="OK", fail_str="FAIL"),
+                        f"{str(num_ignored)} items ignored {ignored_items_with_paren}",
+                    ],
+                )
+
+                tt_report_table.append(
+                    [
+                        "Treasure table entries",
+                        self.get_colored_status(True, ok_str="OK", fail_str="FAIL"),
+                        f"{str(len(tt_report.treasure_table_entries))} entries",
+                    ],
+                )
+
+                tt_report_table.append(
+                    [
+                        "Items not in treasure file",
+                        self.get_colored_status(True, ok_str="OK", fail_str="FAIL"),
+                        f"{str(len(tt_report.inaccessible_items))} items may not be accessible",
+                    ],
+                )
+
+                typer.echo(os.linesep)
+                typer.echo(
+                    tabulate(
+                        tt_report_table,
+                        headers=["Treasure Table Report", "Status", "Notes"],
+                    )
+                )
+                typer.echo(os.linesep)
 
     def get_tt_report(self, tt_filename: str, rt_dir: str) -> TreasureTableReport:
         tt_analyzer = TreasureTableAnalyzer()
