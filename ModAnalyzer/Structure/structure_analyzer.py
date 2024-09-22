@@ -43,7 +43,8 @@ class StructureAnalyzer:
     of calls to exists
     """
 
-    mod_dir_name: str
+    mod_dir_name: str = ""
+    mod_dirs: list[str] = []
 
     def __init__(self):
         self.logger = logging.getLogger(__file__)
@@ -88,27 +89,27 @@ class StructureAnalyzer:
                 raise ValueError(
                     "Empty mod dirs supplied to StructureAnalyzer.generate_report"
                 )
-            mod_dirs = mod_dirs_override
+            self.mod_dirs = mod_dirs_override
             for d in mod_dirs_override:
                 if "Treasure" in d:
                     self.logger.debug(f"mod_dirs tt path = {d}")
         else:
             self.logger.debug("Determining mod dirs path")
             mod_dirs_paths: list[Path] = self.get_mod_dirs(Path(mod_dir_name))
-            mod_dirs: list[str] = [str(d) for d in mod_dirs_paths]
+            self.mod_dirs: list[str] = [str(d) for d in mod_dirs_paths]
 
-        report.has_mods_modname = self.has_mods_modname(mod_dirs)
+        report.has_mods_modname = self.has_mods_modname(self.mod_dirs)
 
         if not report.has_mods_modname:
             self.logger.info("No mod root dir!")
             return report
 
         # If they do not have the mod root dir, then they won't have this stuff either
-        report.has_meta_file = self.has_meta(mod_dirs)
-        report.has_public = self.has_public(mod_dirs)
-        report.has_mod_fixer = self.has_mod_fixer(mod_dirs)
-        report.has_root_templates = self.has_root_templates(mod_dirs)
-        report.has_treasure_table = self.has_treasure_table(mod_dirs)
+        report.has_meta_file = self.has_meta(self.mod_dirs)
+        report.has_public = self.has_public(self.mod_dirs)
+        report.has_mod_fixer = self.has_mod_fixer(self.mod_dirs)
+        report.has_root_templates = self.has_root_templates(self.mod_dirs)
+        report.has_treasure_table = self.has_treasure_table(self.mod_dirs)
 
         return report
 
@@ -129,7 +130,7 @@ class StructureAnalyzer:
 
     def get_mod_dirs(self, mod_dir: Path) -> list[Path]:
         """Used initially to create list of mod dirs"""
-        return list(mod_dir.glob(os.path.join(mod_dir, "**", "*")))
+        return list(mod_dir.glob("**\\*"))
 
     def get_mods_modname_path(self) -> str:
         return os.path.join(self.mod_dir_name, "Mods", self.mod_dir_name)
@@ -195,6 +196,7 @@ class StructureAnalyzer:
         return os.path.join(self.get_mods_modname_path(), "meta.lsf.lsx")
 
     def has_meta(self, mod_dirs: list[str]) -> bool:
+        """This file does not need to be converted"""
         meta_path = self.get_meta_path()
         meta_mt_path = self.get_mt_meta_path()
 

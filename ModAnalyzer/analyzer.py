@@ -1,3 +1,4 @@
+import os
 import pprint
 
 import typer
@@ -38,11 +39,11 @@ class Analyzer:
         else:
             pprint.pp(input)
 
-    def get_colored_status(self, status: bool):
+    def get_colored_status(self, status: bool, ok_str="FOUND", fail_str="NOT FOUND"):
         if status:
-            return typer.style("OK", fg=typer.colors.GREEN, bold=True)
+            return typer.style(ok_str, fg=typer.colors.GREEN, bold=True)
         else:
-            return typer.style("FAIL", fg=typer.colors.RED, bold=True)
+            return typer.style(fail_str, fg=typer.colors.RED, bold=True)
 
     def get_meta_csv_path(self, analyzer: StructureAnalyzer) -> str:
         """
@@ -55,10 +56,26 @@ class Analyzer:
             ]
         )
 
-    def analyze(self, mod_dir: str):
+    def print_debug_info(self, analyzer: StructureAnalyzer):
+        debug_tbl = []
+
+        if len(analyzer.mod_dirs) > 0:
+            for dir in analyzer.mod_dirs:
+                debug_tbl.append([dir])
+
+            typer.echo(tabulate(debug_tbl, headers=["Mod Directories"]))
+        else:
+            typer.echo("No mod directories found")
+
+        typer.echo(os.linesep)
+
+    def analyze(self, mod_dir: str, **kwargs):
         # Structure report
         structure_analyzer = Structure.StructureAnalyzer()
         structure_report = structure_analyzer.generate_report(mod_dir)
+
+        if "debug_mode" in kwargs and kwargs["debug_mode"]:
+            self.print_debug_info(structure_analyzer)
 
         headers = ["Subject", "Status", "Notes"]
         summary_table = [
