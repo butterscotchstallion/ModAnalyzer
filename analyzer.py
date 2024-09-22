@@ -1,4 +1,4 @@
-import pprint
+import os
 
 import typer
 
@@ -9,11 +9,10 @@ app = typer.Typer()
 
 @app.command()
 def analyze(mod_directory: str):
-    print(f"Analyzing {mod_directory}")
-    analyzer = Analyzer()
-    report = analyzer.analyze(mod_directory)
-
-    pprint.pp(report)
+    typer.echo(f"Analyzing {mod_directory}")
+    typer.echo(f"=================================================={os.linesep}")
+    analyzer = Analyzer(using_typer=True)
+    analyzer.analyze(mod_directory)
 
 
 if __name__ == "__main__":

@@ -2,6 +2,8 @@ import logging
 import os
 from dataclasses import dataclass
 
+import typer
+
 
 @dataclass(init=False)
 class bcolors:
@@ -33,15 +35,36 @@ class PathAnalyzer:
 
     EXISTS_COLOR: str
     NON_EXISTENT_COLOR: str
+    using_typer: bool = False
 
-    def __init__(self):
+    def __init__(self, **kwargs):
         self.EXISTS_COLOR = bcolors.OKGREEN
         self.NON_EXISTENT_COLOR = bcolors.FAIL
         self.logger = logging.getLogger(__name__)
 
+        if "using_typer" in kwargs:
+            self.using_typer = kwargs["using_typer"]
+
     def get_colored_path(self, path: str):
         report = self.get_path_report(path)
         return report.colored_path
+
+    def get_typer_color(self, color: str):
+        try:
+            color_map = {
+                bcolors.OKGREEN: typer.colors.BRIGHT_GREEN,
+                bcolors.FAIL: typer.colors.RED,
+            }
+            return color_map[color]
+        except KeyError as missing_color:
+            self.logger.error(f'Cannot get typer color for "{missing_color}"')
+            return ""
+
+    def get_string_with_color(self, input: str, color: str) -> str:
+        if self.using_typer:
+            return typer.style(input, fg=self.get_typer_color(color), bold=True)
+        else:
+            return f"{color}{input}{bcolors.ENDC}"
 
     def get_path_report(self, path: str) -> PathAnalyzerReport:
         """
@@ -68,7 +91,7 @@ class PathAnalyzer:
             else:
                 encountered_non_existent_dir = True
 
-            path_with_colors = f"{color}{p}{bcolors.ENDC}"
+            path_with_colors = self.get_string_with_color(p, color)
             report.paths[p] = {"exists": exists, "path_with_color": path_with_colors}
             colored_paths.append(path_with_colors)
 

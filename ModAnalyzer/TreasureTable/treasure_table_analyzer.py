@@ -23,9 +23,9 @@ class TreasureTableAnalyzer:
     path_analyzer: PathAnalyzer
     logger: logging.Logger
 
-    def __init__(self):
+    def __init__(self, **kwargs):
         self.logger = logging.getLogger(__name__)
-        self.path_analyzer = PathAnalyzer()
+        self.path_analyzer = PathAnalyzer(**kwargs)
 
     def get_item_list(
         self, rt_parser: TreasureTable.RootTemplateParser, rt_dir: str

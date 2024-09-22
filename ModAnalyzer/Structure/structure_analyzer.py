@@ -3,11 +3,15 @@ import os
 from dataclasses import dataclass
 from pathlib import Path
 
+from ModAnalyzer.Structure.path_analyzer import PathAnalyzer
+
 
 @dataclass
 class StructureReport:
     # Directories
     # TODO: rename this to root dir maybe?
+    mod_dir_exists: bool = False
+    mod_dir_is_dir: bool = False
     has_mods_modname: bool = False
     has_mod_fixer: bool = False
     has_public: bool = False
@@ -44,6 +48,7 @@ class StructureAnalyzer:
     def __init__(self):
         self.logger = logging.getLogger(__file__)
         self.mod_dir_name = ""
+        self.path_analyzer = PathAnalyzer()
 
     def generate_report(
         self,
@@ -60,10 +65,25 @@ class StructureAnalyzer:
         - Do not perform additional checks if the first directories
         do not exist, because then we know others also do not exist
         """
-        self.mod_dir_name = mod_dir_name
+        report = StructureReport()
+
+        self.mod_dir_name = mod_dir_name.strip(os.sep)
+
+        # Check exists
+        report.mod_dir_exists = os.path.exists(self.mod_dir_name)
+        if not report.mod_dir_exists:
+            self.logger.error(f"{self.mod_dir_name} does not exist")
+            return report
+
+        # Check is dir
+        report.mod_dir_is_dir = os.path.isdir(self.mod_dir_name)
+        if not report.mod_dir_is_dir:
+            self.logger.error(f"{self.mod_dir_name} is not a directory")
+            return report
 
         # Used in test
         if mod_dirs_override:
+            self.logger.debug("Using mod_dirs_override")
             if len(mod_dirs_override) == 0:
                 raise ValueError(
                     "Empty mod dirs supplied to StructureAnalyzer.generate_report"
@@ -73,10 +93,10 @@ class StructureAnalyzer:
                 if "Treasure" in d:
                     self.logger.debug(f"mod_dirs tt path = {d}")
         else:
+            self.logger.debug("Determining mod dirs path")
             mod_dirs_paths: list[Path] = self.get_mod_dirs(Path(mod_dir_name))
             mod_dirs: list[str] = [str(d) for d in mod_dirs_paths]
 
-        report = StructureReport()
         report.has_mods_modname = self.has_mods_modname(mod_dirs)
 
         if not report.has_mods_modname:
@@ -96,7 +116,16 @@ class StructureAnalyzer:
         return path in mod_dirs
 
     def get_lsx_files_in_dir(self, directory: Path) -> list[Path]:
-        return list(directory.glob("*.lsx")) + list(directory.glob("*.lsf.lsx"))
+        # TODO: check if extension needs to be case sensitive
+        lsx_files = []
+        try:
+            lsx_files = list(directory.glob("*.lsx", case_sensitive=False)) + list(
+                directory.glob("*.lsf.lsx")
+            )
+        except Exception as err:
+            self.logger.error(f"Unexpected error in get_lsx_files_in_dir: {err}")
+        finally:
+            return lsx_files
 
     def get_mod_dirs(self, mod_dir: Path) -> list[Path]:
         """Used initially to create list of mod dirs"""
@@ -159,10 +188,15 @@ class StructureAnalyzer:
     def has_localization(self, mod_dirs: list[str]) -> bool:
         return self.is_path_in_mod_dirs(mod_dirs, self.mod_dir_name)
 
+    def get_meta_path(self) -> str:
+        return os.path.join(self.get_mods_modname_path(), "meta.lsx")
+
+    def get_mt_meta_path(self) -> str:
+        return os.path.join(self.get_mods_modname_path(), "meta.lsf.lsx")
+
     def has_meta(self, mod_dirs: list[str]) -> bool:
-        mods_base_path = self.get_mods_modname_path()
-        meta_path = os.path.join(mods_base_path, "meta.lsx")
-        meta_mt_path = os.path.join(mods_base_path, "meta.lsf.lsx")
+        meta_path = self.get_meta_path()
+        meta_mt_path = self.get_mt_meta_path()
 
         # Maybe glob this
         meta_exists = self.is_path_in_mod_dirs(mod_dirs, meta_path)
