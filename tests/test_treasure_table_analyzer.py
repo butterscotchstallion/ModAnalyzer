@@ -21,8 +21,6 @@ def test_generate_report(mod_dirs_fixture: list[str]):
     tt_filename = structure_analyzer.get_treasure_table_file_path()
     rt_dir = structure_analyzer.get_rt_dir()
 
-    logger.debug(f"RT dir: {rt_dir}")
-
     assert structure_report.has_treasure_table, f"No treasure table at {tt_filename}"
 
     if structure_report.has_treasure_table:

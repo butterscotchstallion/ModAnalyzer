@@ -68,12 +68,6 @@ class PathAnalyzer:
             else:
                 encountered_non_existent_dir = True
 
-            # if os.path.isfile(test_path):
-            #    color = bcolors.OKCYAN
-
-            # The file shows as existent here because we are testing the whole path
-            # self.logger.debug(f"{color}{p}: {exists}{bcolors.ENDC}")
-
             path_with_colors = f"{color}{p}{bcolors.ENDC}"
             report.paths[p] = {"exists": exists, "path_with_color": path_with_colors}
             colored_paths.append(path_with_colors)
