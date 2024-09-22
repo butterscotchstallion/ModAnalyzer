@@ -83,8 +83,6 @@ class StructureAnalyzer:
             self.logger.info("No mod root dir!")
             return report
 
-        self.logger.info("Mod root dir confirmed")
-
         # If they do not have the mod root dir, then they won't have this stuff either
         report.has_meta_file = self.has_meta(mod_dirs)
         report.has_public = self.has_public(mod_dirs)
@@ -120,6 +118,7 @@ class StructureAnalyzer:
     def get_treasure_table_file_path(self) -> str:
         return os.path.join(self.get_generated_path(), "TreasureTable.txt")
 
+    # RunesOfFaerun\Public\RunesOfFaerun\RootTemplates
     def get_rt_dir(self) -> str:
         rt_dir_parts = [self.get_public_path(), self.mod_dir_name, "RootTemplates"]
         return os.path.join(*rt_dir_parts)

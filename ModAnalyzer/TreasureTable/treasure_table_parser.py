@@ -31,6 +31,14 @@ class TreasureTableParser:
             value = values[0]
         return value
 
+    def get_flattened_map(
+        self, tt_map: dict[str, list[TreasureTableEntry]]
+    ) -> list[TreasureTableEntry]:
+        tt_entries = []
+        for tt_name in tt_map:
+            tt_entries.append(tt_map[tt_name])
+        return tt_entries
+
     def parse_treasure_table(
         self, lines: list[str]
     ) -> dict[str, list[TreasureTableEntry]]:

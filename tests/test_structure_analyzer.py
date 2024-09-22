@@ -1,4 +1,5 @@
 import logging
+import os
 
 from ModAnalyzer import Structure
 
@@ -13,7 +14,24 @@ def test_get_dirs(mod_dirs_fixture: list[str]):
     report = analyzer.generate_report("TestMod", mod_dirs_fixture)
 
     # pprint.pp(report)
+    public_path = ["TestMod", "Public"]
+    assert analyzer.get_public_path() == os.path.join(
+        *public_path
+    ), "Public path incorrect"
 
+    stats_path = os.path.join(*public_path + ["TestMod", "Stats"])
+    assert analyzer.get_stats_path() == stats_path, "Stats path is incorrect"
+
+    # TestMod\Public\TestMod\RootTemplates
+    assert analyzer.get_rt_dir() == os.path.join(
+        *public_path, "TestMod", "RootTemplates"
+    ), "Root templates path is incorrect"
+
+    assert analyzer.get_generated_path() == os.path.join(
+        stats_path, "Generated"
+    ), "Generated path is incorrect"
+
+    # has_ tests
     assert report.has_meta_file, "No meta file detected"
     assert report.has_mods_modname, "No mod root dir"
     assert report.has_public, "No public dir"

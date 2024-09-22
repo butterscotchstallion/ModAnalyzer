@@ -1,16 +1,17 @@
 import logging
-import os
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
 from ModAnalyzer import Structure, TreasureTable
 from ModAnalyzer.Structure.path_analyzer import PathAnalyzer
+from ModAnalyzer.TreasureTable.models.treasure_table_entry import TreasureTableEntry
 
 
 class TreasureTableReport:
     verified_items: list[str] = []
     total_items: int = 0
-    treasure_table_entries: list[str]
+    treasure_table_entries: list[TreasureTableEntry] = []
+    inaccessible_items: list[str] = []
 
 
 class TreasureTableAnalyzer:
@@ -43,20 +44,21 @@ class TreasureTableAnalyzer:
                 root_templates = structure_analyzer.get_lsx_files_in_dir(rt_dir_path)
 
                 if len(root_templates) > 0:
-                    rt_nodes = []
                     for rt in root_templates:
-                        rt_path = Path(os.path.join(rt_dir_path, rt))
+                        rt_path = Path(rt)
 
                         if rt_path.exists():
                             rt_xml = rt_path.read_text()
                             root_node = ET.fromstring(rt_xml)
                             dir_nodes = rt_parser.get_unignored_nodes(root_node)
-                            rt_nodes += dir_nodes
+                            nodes += dir_nodes
 
-                            self.logger.debug(f"Added {len(dir_nodes)} from {rt}")
+                            self.logger.debug(
+                                f"Added {len(dir_nodes)} nodes from {rt_path.stem}{rt_path.suffix}"
+                            )
                         else:
                             self.logger.error(
-                                f"TreasureTableAnalyzer: {self.path_analyzer.get_colored_path(str(rt_path))} does not exist"
+                                f"TreasureTableAnalyzer: RT path {self.path_analyzer.get_colored_path(str(rt_path))} does not exist"
                             )
                 else:
                     self.logger.error(
@@ -86,20 +88,25 @@ class TreasureTableAnalyzer:
             rt_parser = TreasureTable.RootTemplateParser()
             rt_nodes = self.get_item_list(rt_parser, rt_dir)
 
+            self.logger.debug(f"rt_nodes: {rt_nodes}")
+
             if len(rt_nodes) > 0:
                 stats_names = rt_parser.get_stats_names_from_node_children(rt_nodes)
                 # Verify stats names against treasure tables
                 verified_items = self.check_items(stats_names, tt_summary)
                 items_verified = len(verified_items) == len(stats_names)
 
+                report.verified_items = verified_items
+                report.total_items = len(stats_names)
+                report.treasure_table_entries = tt_parser.get_flattened_map(tt_map)
+
                 if not items_verified:
-                    unverified_items = [
+                    report.inaccessible_items = [
                         item for item in stats_names if item not in verified_items
                     ]
                     self.logger.error(
-                        f"Items not in a treasure table: {unverified_items} ({len(verified_items)}, {len(stats_names)})"
+                        f"Items not in a treasure table: {report.inaccessible_items} ({len(verified_items)}, {len(stats_names)})"
                     )
-
             else:
                 self.logger.info("0 nodes found from LSX files")
         else:
