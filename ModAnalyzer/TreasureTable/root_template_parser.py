@@ -35,27 +35,59 @@ class RootTemplateParser:
 
         return stats_names
 
-    def get_unignored_nodes(self, root: ET.Element) -> list[ET.Element]:
+    def get_map_key_from_attributes(self, attrs: list[ET.Element]) -> str:
+        """
+        We have to go through all attributes and get the map key first, because
+        we are using it as a key. There could be a scenario where the ignore attribute
+        comes before the map key, and then we can't build the ignore map. Doing it this way
+        means iterating the attributes twice, but it's not like this process is going to be
+        running a lot. It's surely a better alternative to including an ignored node
+        """
+        map_key = ""
+
+        try:
+            for attr in attrs:
+                if attr.attrib["id"] == "MapKey":
+                    map_key = attr.attrib["value"]
+                    break
+        except Exception as err:
+            self.logger.error(
+                f"Unexpected error while trying to find map key for get_valid_nodes: {err}"
+            )
+
+        return map_key
+
+    def get_valid_nodes(self, root: ET.Element) -> dict[str, list[ET.Element]]:
         """
         Gets templates children and filters nodes with a DevComment set to
         Ignore
         """
-        unignored_nodes: list[ET.Element] = []
+        valid_nodes: list[ET.Element] = []
+        ignored_nodes_map: dict[str, bool] = {}
+        ignored_nodes: list[ET.Element] = []
         node_children = self.get_templates_children(root)
         has_ignored_attr = False
 
         if node_children is not None:
             for node_child in node_children:
+                has_ignored_attr = False
                 attributes = node_child.findall("attribute")
+                map_key = self.get_map_key_from_attributes(attributes)
+
+                # Get ignored nodes
                 for attr_node in attributes:
                     has_ignored_attr = attr_is_ignore_comment(attr_node)
+                    if has_ignored_attr:
+                        ignored_nodes_map[map_key] = True
 
-                if not has_ignored_attr:
-                    unignored_nodes.append(node_child)
+                if map_key in ignored_nodes_map:
+                    ignored_nodes.append(node_child)
+                else:
+                    valid_nodes.append(node_child)
 
-        self.logger.info(f"Found {len(unignored_nodes)} nodes in RT")
+        self.logger.info(f"Found {len(valid_nodes)} nodes in RT")
 
-        return unignored_nodes
+        return {"valid": valid_nodes, "ignored": ignored_nodes}
 
     def get_templates_children(self, root: ET.Element) -> ET.Element | None:
         # Get region#Templates

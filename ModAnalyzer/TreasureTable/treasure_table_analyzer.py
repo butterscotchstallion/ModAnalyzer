@@ -8,8 +8,8 @@ from ModAnalyzer.TreasureTable.models.treasure_table_entry import TreasureTableE
 
 
 class TreasureTableReport:
-    verified_items: list[str] = []
-    total_items: int = 0
+    valid_items: list[ET.Element] = []
+    ignored_items: list[ET.Element] = []
     treasure_table_entries: list[TreasureTableEntry] = []
     inaccessible_items: list[str] = []
 
@@ -29,18 +29,20 @@ class TreasureTableAnalyzer:
 
     def get_item_list(
         self, rt_parser: TreasureTable.RootTemplateParser, rt_dir: str
-    ) -> list[ET.Element]:
+    ) -> dict[str, list[ET.Element]]:
         """
         1. Find LSX files in RT dir
         2. Parse the XML from each file
         3. Get nodes from each file
         4. Add to list
         """
-        nodes: list[ET.Element] = []
+        item_summary: dict[str, list[ET.Element]] = {"valid": [], "ignored": []}
+        valid_nodes: list[ET.Element] = []
+        ignored_nodes: list[ET.Element] = []
         structure_analyzer = Structure.StructureAnalyzer()
         rt_dir_path = Path(rt_dir)
         try:
-            if rt_dir_path.exists():
+            if rt_dir_path.exists() and rt_dir_path.is_dir():
                 root_templates = structure_analyzer.get_lsx_files_in_dir(rt_dir_path)
 
                 if len(root_templates) > 0:
@@ -50,26 +52,33 @@ class TreasureTableAnalyzer:
                         if rt_path.exists():
                             rt_xml = rt_path.read_text()
                             root_node = ET.fromstring(rt_xml)
-                            dir_nodes = rt_parser.get_unignored_nodes(root_node)
-                            nodes += dir_nodes
+                            file_summary = rt_parser.get_valid_nodes(root_node)
+                            # All valid nodes
+                            valid_nodes += file_summary["valid"]
+                            # All ignored nodes
+                            ignored_nodes += file_summary["ignored"]
 
                             self.logger.debug(
-                                f"Added {len(dir_nodes)} nodes from {rt_path.stem}{rt_path.suffix}"
+                                f"Added {len(file_summary["valid"])} ({len(file_summary["ignored"])} ignored) nodes from {rt_path.stem}{rt_path.suffix}"
                             )
                         else:
                             self.logger.error(
                                 f"TreasureTableAnalyzer: RT path {self.path_analyzer.get_colored_path(str(rt_path))} does not exist"
                             )
+                    item_summary["valid"] = valid_nodes
+                    item_summary["ignored"] = ignored_nodes
                 else:
                     self.logger.error(
                         f"TreasureTableAnalyzer: cannot find any RTs in {rt_dir}"
                     )
             else:
-                self.logger.error(f"TreasureTableAnalyzer: cannot find RT dir {rt_dir}")
+                self.logger.error(
+                    f"TreasureTableAnalyzer: {rt_dir} doesn't exist or isn't a directory"
+                )
         except Exception as err:
             self.logger.error(f"TreasureTableAnalyzer: Unexpected exception: {err}")
         finally:
-            return nodes
+            return item_summary
 
     def generate_report(self, tt_filename: str, rt_dir: str) -> TreasureTableReport:
         report = TreasureTableReport()
@@ -78,34 +87,36 @@ class TreasureTableAnalyzer:
         reader = TreasureTable.TreasureTableReader()
         tt_parser = TreasureTable.TreasureTableParser()
         tt_lines = reader.read_from_file(tt_filename)
-        items_verified = []
-        report.total_items = 0
+        items_verified: bool = False
 
         if len(tt_lines) > 0:
             tt_map = tt_parser.parse_treasure_table(tt_lines)
             tt_summary = tt_parser.get_summary_from_tt_map(tt_map)
             # Read/parse RTs
             rt_parser = TreasureTable.RootTemplateParser()
-            rt_nodes = self.get_item_list(rt_parser, rt_dir)
+            item_summary = self.get_item_list(rt_parser, rt_dir)
+            rt_nodes = item_summary["valid"]
 
             self.logger.debug(f"rt_nodes: {rt_nodes}")
 
             if len(rt_nodes) > 0:
                 stats_names = rt_parser.get_stats_names_from_node_children(rt_nodes)
                 # Verify stats names against treasure tables
-                verified_items = self.check_items(stats_names, tt_summary)
-                items_verified = len(verified_items) == len(stats_names)
+                verified_stat_names: list[str] = self.check_items(
+                    stats_names, tt_summary
+                )
+                items_verified: bool = len(verified_stat_names) == len(stats_names)
 
-                report.verified_items = verified_items
-                report.total_items = len(stats_names)
+                report.valid_items = item_summary["valid"]
+                report.ignored_items = item_summary["ignored"]
                 report.treasure_table_entries = tt_parser.get_flattened_map(tt_map)
 
                 if not items_verified:
                     report.inaccessible_items = [
-                        item for item in stats_names if item not in verified_items
+                        item for item in stats_names if item not in verified_stat_names
                     ]
                     self.logger.error(
-                        f"Items not in a treasure table: {report.inaccessible_items} ({len(verified_items)}, {len(stats_names)})"
+                        f"Items not in a treasure table: {report.inaccessible_items} ({len(verified_stat_names)}, {len(stats_names)})"
                     )
             else:
                 self.logger.info("0 nodes found from LSX files")

@@ -1,17 +1,20 @@
-from argparse import ArgumentParser
+import pprint
 
-from ModAnalyzer import Analyzer
+import typer
 
-parser = ArgumentParser(
-    prog="Mod Analyzer",
-    description="Analyzes BG3 mods to find and fix problems",
-)
-parser.add_argument(
-    "-m", dest="mod_directory", help="Your mod directory", required=True
-)
-args = parser.parse_args()
+from ModAnalyzer.analyzer import Analyzer
+
+app = typer.Typer()
+
+
+@app.command()
+def analyze(mod_directory: str):
+    print(f"Analyzing {mod_directory}")
+    analyzer = Analyzer()
+    report = analyzer.analyze(mod_directory)
+
+    pprint.pp(report)
+
 
 if __name__ == "__main__":
-    if args.mod_directory:
-        analyzer = Analyzer()
-        report = analyzer.analyze(args.mod_directory)
+    app()

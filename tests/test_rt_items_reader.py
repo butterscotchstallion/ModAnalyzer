@@ -22,11 +22,11 @@ def node_children():
 
     assert root_node is not None, "Failed to get root node from XML"
 
-    node_children = parser.get_unignored_nodes(root_node)
+    node_summary = parser.get_valid_nodes(root_node)
 
-    assert len(node_children) > 0, "Failed to get template children"
+    assert len(node_summary["valid"]) > 0, "Failed to get template children"
 
-    return node_children
+    return node_summary["valid"]
 
 
 def test_get_items_from_rt(node_children: list[ET.Element]):
