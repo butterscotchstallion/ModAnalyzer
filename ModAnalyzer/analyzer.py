@@ -1,5 +1,6 @@
 import os
 import pprint
+import time
 import xml.etree.ElementTree as ET
 
 import typer
@@ -87,15 +88,14 @@ class Analyzer:
         return output
 
     def get_rt_notes(self, structure_analyzer: StructureAnalyzer) -> str:
-        rt_dir = structure_analyzer.get_rt_dir()
-        rt_filenames = [str(p) for p in structure_analyzer.get_root_templates()]
+        rt_filenames = [
+            structure_analyzer.path_analyzer.get_colored_path(str(p))
+            for p in structure_analyzer.get_root_templates()
+        ]
         rt_list = os.linesep.join(rt_filenames)
-        num_rts = len(rt_filenames)
-        template_word = "template" if num_rts == 1 else "templates"
         return os.linesep.join(
             [
-                f"{num_rts} root {template_word}",
-                structure_analyzer.path_analyzer.get_colored_path(rt_dir),
+                # structure_analyzer.path_analyzer.get_colored_path(rt_dir),
                 rt_list,
             ]
         )
@@ -110,7 +110,7 @@ class Analyzer:
         if debug_mode:
             self.print_debug_info(structure_analyzer)
 
-        headers = ["Mod Structure Report", "Status", "Notes"]
+        headers = ["Mod Structure Report", "Status", "Details"]
         structure_report_table: list[list[str]] = [
             [
                 f'"{mod_dir}" exists',
@@ -157,17 +157,21 @@ class Analyzer:
             treasure_table_entries: list[TreasureTableEntry] = []
             inaccessible_items: list[str] = []
             """
-            num_valid_items = len(tt_report.valid_items)
+            num_valid_items = typer.style(
+                len(tt_report.valid_items), typer.colors.GREEN
+            )
             tt_report_table = []
             tt_report_table.append(
                 [
                     "Valid treasure items",
                     self.get_colored_status(True, ok_str="OK", fail_str="FAIL"),
-                    f"{str(num_valid_items)} items present in treasure tables",
+                    f"{num_valid_items} items present in treasure tables",
                 ]
             )
 
-            num_ignored = len(tt_report.ignored_items)
+            num_ignored = typer.style(
+                len(tt_report.ignored_items), fg=typer.colors.GREEN
+            )
             ignored_items_csv = self.get_list_of_ignored_items(tt_report.ignored_items)
             ignored_items_with_paren = (
                 f"({ignored_items_csv})" if ignored_items_csv else ""
@@ -181,19 +185,25 @@ class Analyzer:
                 ],
             )
 
+            num_tt_entries = typer.style(
+                len(tt_report.treasure_table_entries), fg=typer.colors.GREEN
+            )
             tt_report_table.append(
                 [
                     "Treasure table entries",
                     self.get_colored_status(True, ok_str="OK", fail_str="FAIL"),
-                    f"{str(len(tt_report.treasure_table_entries))} entries",
+                    f"{num_tt_entries} entries",
                 ],
             )
 
+            num_inaccessible = typer.style(
+                len(tt_report.inaccessible_items), fg=typer.colors.GREEN
+            )
             tt_report_table.append(
                 [
                     "Items not in treasure file",
                     self.get_colored_status(True, ok_str="OK", fail_str="FAIL"),
-                    f"{str(len(tt_report.inaccessible_items))} items may not be accessible",
+                    f"{num_inaccessible} items may not be accessible",
                 ],
             )
 
@@ -201,12 +211,13 @@ class Analyzer:
             typer.echo(
                 tabulate(
                     tt_report_table,
-                    headers=["Treasure Table Report", "Status", "Notes"],
+                    headers=["Treasure Table Report", "Status", "Details"],
                 )
             )
             typer.echo(os.linesep)
 
     def analyze(self, mod_dir: str, **kwargs):
+        start_time: float = time.time()
         structure_analyzer = Structure.StructureAnalyzer()
         structure_report = structure_analyzer.generate_report(mod_dir)
         debug_mode = False
@@ -223,6 +234,12 @@ class Analyzer:
             rt_dir = structure_analyzer.get_rt_dir()
             has_tt = structure_report.has_treasure_table
             self.print_tt_report(has_tt, tt_filename, rt_dir)
+
+        # Show elapsed time
+        elapsed_seconds = round(time.time() - start_time, 2)
+        elapsed_desc = typer.style(elapsed_seconds, typer.colors.GREEN)
+        typer.echo(f"Analysis complete in {elapsed_desc} seconds")
+        typer.echo(os.linesep)
 
     def get_tt_report(self, tt_filename: str, rt_dir: str) -> TreasureTableReport:
         tt_analyzer = TreasureTableAnalyzer()
