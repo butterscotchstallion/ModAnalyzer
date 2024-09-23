@@ -46,10 +46,13 @@ class StructureAnalyzer:
     mod_dir_name: str = ""
     mod_dirs: list[str] = []
 
-    def __init__(self):
+    def __init__(self, **kwargs):
         self.logger = logging.getLogger(__file__)
         self.mod_dir_name = ""
         self.path_analyzer = PathAnalyzer()
+
+        if "mod_dir_name" in kwargs:
+            self.mod_dir_name = kwargs["mod_dir_name"]
 
     def generate_report(
         self,
@@ -133,12 +136,18 @@ class StructureAnalyzer:
         return list(mod_dir.glob("**\\*"))
 
     def get_mods_modname_path(self) -> str:
+        if not self.mod_dir_name:
+            raise ValueError("Mod dir name is empty")
         return os.path.join(self.mod_dir_name, "Mods", self.mod_dir_name)
 
     def get_public_path(self) -> str:
+        if not self.mod_dir_name:
+            raise ValueError("Mod dir name is empty")
         return os.path.join(self.mod_dir_name, "Public")
 
     def get_stats_path(self) -> str:
+        if not self.mod_dir_name:
+            raise ValueError("Mod dir name is empty")
         dir_parts = [self.get_public_path(), self.mod_dir_name, "Stats"]
         return os.path.join(*dir_parts)
 
