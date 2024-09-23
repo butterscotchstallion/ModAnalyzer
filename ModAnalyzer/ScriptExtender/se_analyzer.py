@@ -24,7 +24,6 @@ class SEAnalyzer:
 
     def __init__(self, **kwargs):
         self.structure_analyzer = kwargs["structure_analyzer"]
-        self.mod_dir_name = kwargs["mod_dir_name"]
         self.logger = logging.getLogger(__file__)
 
     def get_config_path(self) -> str:
@@ -32,17 +31,19 @@ class SEAnalyzer:
 
     def get_base_path(self) -> str:
         path_parts = [self.structure_analyzer.get_mods_modname_path(), "ScriptExtender"]
-        self.logger.debug(path_parts)
         return os.path.join(*path_parts)
 
+    def get_lua_dir(self) -> str:
+        return os.path.join(*[self.get_base_path(), "Lua"])
+
     def get_server_dir(self) -> str:
-        return os.path.join(*[self.get_base_path(), "Lua", "Server"])
+        return os.path.join(self.get_lua_dir(), "Server")
 
     def get_bootstrap_server_file_path(self) -> str:
-        return os.path.join(self.get_server_dir(), "BootstrapServer.lua")
+        return os.path.join(self.get_lua_dir(), "BootstrapServer.lua")
 
     def get_bootstrap_client_file_path(self) -> str:
-        return os.path.join(self.get_server_dir(), "BootstrapClient.lua")
+        return os.path.join(self.get_lua_dir(), "BootstrapClient.lua")
 
     ####################
 
@@ -73,10 +74,14 @@ class SEAnalyzer:
 
     def has_config_parse_error(self, config_path: str):
         try:
-            config_contents = Path(config_path).read_text()
-            json.loads(config_contents)
-            self.logger.debug("Parsed SE config successfully")
-            return False
+            path = Path(config_path)
+            if path.exists():
+                config_contents = path.read_text()
+                json.loads(config_contents)
+                self.logger.debug("Parsed SE config successfully")
+                return False
+            else:
+                return False
         except json.JSONDecodeError as err:
             self.logger.error(f"Error parsing {config_path}: {err}")
             return True
