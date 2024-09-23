@@ -9,6 +9,6 @@ def test_generate_report(mod_dirs_fixture: list[str]):
 
     assert report.has_se_dir, "No SE dir"
     assert report.has_config, "No SE config"
-    assert not report.has_config_parse_error, "Config parse error detected"
+    assert not report.config_parse_error, "Config parse error detected"
     assert report.has_bootstrap_server, "No BootstrapServer.lua"
     assert not report.has_bootstrap_client, "No BootstrapClient.lua"

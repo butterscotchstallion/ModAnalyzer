@@ -7,6 +7,7 @@ import typer
 from tabulate import tabulate
 
 from ModAnalyzer import Structure
+from ModAnalyzer.ScriptExtender import SEAnalyzer
 from ModAnalyzer.Structure import StructureReport
 from ModAnalyzer.Structure.path_analyzer import PathAnalyzer
 from ModAnalyzer.Structure.structure_analyzer import StructureAnalyzer
@@ -214,7 +215,61 @@ class Analyzer:
                     headers=["Treasure Table Report", "Status", "Details"],
                 )
             )
-            typer.echo(os.linesep)
+
+    def print_se_report(
+        self, mod_dirs: list[str], structure_analyzer: StructureAnalyzer
+    ):
+        se_analyzer = SEAnalyzer(structure_analyzer=structure_analyzer)
+        se_report = se_analyzer.generate_report(mod_dirs)
+        """
+        has_se_dir: bool = False
+        has_config: bool = False
+        has_server_dir: bool = False
+        has_config_parse_error: bool = False
+        has_bootstrap_server: bool = False
+        has_bootstrap_client: bool = False
+        """
+        se_report_table = [
+            [
+                "SE dir",
+                self.get_colored_status(se_report.has_se_dir),
+                self.path_analyzer.get_colored_path(se_analyzer.get_base_path()),
+            ]
+        ]
+
+        if se_report.has_se_dir:
+            se_report_table.append(
+                [
+                    "Config",
+                    self.get_colored_status(se_report.has_config),
+                    self.path_analyzer.get_colored_path(se_analyzer.get_config_path()),
+                ]
+            )
+            se_report_table.append(
+                [
+                    "Server dir",
+                    self.get_colored_status(se_report.has_server_dir),
+                    self.path_analyzer.get_colored_path(se_analyzer.get_server_dir()),
+                ]
+            )
+
+            if se_report.config_parse_error:
+                se_report_table.append(
+                    [
+                        "Config Parse Error",
+                        self.get_colored_status(True, ok_str="OK", fail_str="FAIL"),
+                        se_report.config_parse_error,
+                    ]
+                )
+
+        typer.echo(os.linesep)
+        typer.echo(
+            tabulate(
+                se_report_table,
+                headers=["Script Extender Report", "Status", "Details"],
+            )
+        )
+        typer.echo(os.linesep)
 
     def analyze(self, mod_dir: str, **kwargs):
         start_time: float = time.time()
@@ -225,15 +280,20 @@ class Analyzer:
         if "debug_mode" in kwargs:
             debug_mode = kwargs["debug_mode"]
 
+        # Structure
         self.print_structure_report(
             mod_dir, structure_analyzer, structure_report, debug_mode
         )
 
         if structure_report.mod_dir_exists:
+            # Treasure table report
             tt_filename = structure_analyzer.get_treasure_table_file_path()
             rt_dir = structure_analyzer.get_rt_dir()
             has_tt = structure_report.has_treasure_table
             self.print_tt_report(has_tt, tt_filename, rt_dir)
+
+        # SE
+        self.print_se_report(structure_analyzer.mod_dirs, structure_analyzer)
 
         # Show elapsed time
         elapsed_seconds = round(time.time() - start_time, 2)

@@ -10,7 +10,7 @@ class SEReport:
     has_se_dir: bool = False
     has_config: bool = False
     has_server_dir: bool = False
-    has_config_parse_error: bool = False
+    config_parse_error: str = ""
     has_bootstrap_server: bool = False
     has_bootstrap_client: bool = False
 
@@ -27,7 +27,11 @@ class SEAnalyzer:
         self.logger = logging.getLogger(__file__)
 
     def get_config_path(self) -> str:
-        return os.path.join(self.get_base_path(), "Config.json")
+        config_path = os.path.join(self.get_base_path(), "Config.json")
+        # TestMod\Mods\TestMod\ScriptExtender\Config.json
+        # TestMod\Mods\TestMod\ScriptExtender\Config.json
+        self.logger.debug(config_path)
+        return config_path
 
     def get_base_path(self) -> str:
         path_parts = [self.structure_analyzer.get_mods_modname_path(), "ScriptExtender"]
@@ -72,22 +76,18 @@ class SEAnalyzer:
             mod_dirs, self.get_bootstrap_client_file_path()
         )
 
-    def has_config_parse_error(self, config_path: str):
+    def get_config_parse_error(self, config_path: str) -> str | None:
         try:
             path = Path(config_path)
             if path.exists():
                 config_contents = path.read_text()
                 json.loads(config_contents)
                 self.logger.debug("Parsed SE config successfully")
-                return False
-            else:
-                return False
         except json.JSONDecodeError as err:
             self.logger.error(f"Error parsing {config_path}: {err}")
-            return True
+            return str(err)
         except Exception:
             self.logger.error(f"Unexpected error while parsing {config_path}")
-            return True
 
     def generate_report(self, mod_dirs: list[str]) -> SEReport:
         report = SEReport()
@@ -101,9 +101,11 @@ class SEAnalyzer:
                 report.has_config = self.has_config(mod_dirs)
 
                 if report.has_config:
-                    report.has_config_parse_error = self.has_config_parse_error(
+                    config_parse_error = self.get_config_parse_error(
                         self.get_config_path()
                     )
+                    if config_parse_error:
+                        report.config_parse_error = config_parse_error
 
                 report.has_bootstrap_server = self.has_bootstrap_server(mod_dirs)
                 report.has_bootstrap_client = self.has_bootstrap_client(mod_dirs)
