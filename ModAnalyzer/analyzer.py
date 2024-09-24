@@ -303,19 +303,21 @@ class Analyzer:
                             invalid_fields_summary.append(
                                 f"{field}: {invalid_fields[field]}"
                             )
-                        se_report_table.append(
-                            [
-                                "Config Invalid Fields",
-                                self.get_colored_status(
-                                    not has_invalid_fields, fail_str="FAIL"
-                                ),
-                                typer.style(
-                                    os.linesep.join(invalid_fields_summary),
-                                    fg=typer.colors.RED,
-                                    bold=True,
-                                ),
-                            ]
-                        )
+
+                        if has_invalid_fields:
+                            se_report_table.append(
+                                [
+                                    "Config Invalid Fields",
+                                    self.get_colored_status(
+                                        not has_invalid_fields, fail_str="FAIL"
+                                    ),
+                                    typer.style(
+                                        os.linesep.join(invalid_fields_summary),
+                                        fg=typer.colors.RED,
+                                        bold=True,
+                                    ),
+                                ]
+                            )
 
                     if not has_missing_fields and not has_invalid_fields:
                         pass

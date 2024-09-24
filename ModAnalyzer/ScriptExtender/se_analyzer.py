@@ -105,7 +105,7 @@ class SEAnalyzer:
                 invalid_fields["RequiredVersion"] = "Value does not seem to be a number"
 
             if len(parsed_config["ModTable"]) == 0:
-                invalid_fields["ModTable"] = "ModTable is blank"
+                invalid_fields["ModTable"] = "Value is blank"
 
             if (
                 not isinstance(parsed_config["FeatureFlags"], list)
