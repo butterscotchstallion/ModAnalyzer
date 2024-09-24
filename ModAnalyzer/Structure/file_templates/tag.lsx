@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<save>
+    <version major="4" minor="0" revision="0" build="58" lslib_meta="v1,bswap_guids" />
+    <region id="Tags">
+        <node id="Tags">
+            <attribute id="Description" type="LSString" value="{{MA_TAG_DESCRIPTION}}" />
+            <attribute id="DisplayDescription" type="TranslatedString" handle="{{MA_TAG_DISPLAY_DESCRIPTION_HANDLE}}" version="1" />
+            <attribute id="DisplayName" type="TranslatedString" handle="{{MA_TAG_DISPLAY_NAME_HANDLE}}" version="1" />
+            <attribute id="Icon" type="FixedString" value="{{MA_TAG_ICON_NAME}}" />
+            <attribute id="Name" type="FixedString" value="{{MA_TAG_NAME}}" />
+            <attribute id="UUID" type="guid" value="{{MA_TAG_UUID}}" />
+            <children>
+                <node id="Categories">
+                    <children>
+                        <node id="Category">
+                            <attribute id="Name" type="LSString" value="Code" />
+                        </node>
+                        <node id="Category">
+                            <attribute id="Name" type="LSString" value="CharacterSheet" />
+                        </node>
+                    </children>
+                </node>
+            </children>
+        </node>
+    </region>
+</save>

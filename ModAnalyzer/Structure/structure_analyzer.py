@@ -52,7 +52,15 @@ class StructureAnalyzer:
         self.path_analyzer = PathAnalyzer()
 
         if "mod_dir_name" in kwargs:
-            self.mod_dir_name = kwargs["mod_dir_name"]
+            self.mod_dir_name = self.get_mod_name_without_dir_seps(
+                kwargs["mod_dir_name"]
+            )
+
+    def get_mod_name_without_dir_seps(self, mod_dir_name: str) -> str:
+        mod_name = mod_dir_name.rstrip(os.sep)
+        mod_name = mod_dir_name.rstrip("/")
+
+        return mod_name
 
     def generate_report(
         self,
@@ -71,7 +79,7 @@ class StructureAnalyzer:
         """
         report = StructureReport()
 
-        self.mod_dir_name = mod_dir_name.strip(os.sep)
+        self.mod_dir_name = self.get_mod_name_without_dir_seps(mod_dir_name)
 
         # Check exists
         report.mod_dir_exists = os.path.exists(self.mod_dir_name)
@@ -154,8 +162,17 @@ class StructureAnalyzer:
     def get_generated_path(self) -> str:
         return os.path.join(self.get_stats_path(), "Generated")
 
+    def get_data_path(self) -> str:
+        return os.path.join(self.get_generated_path(), "Data")
+
     def get_treasure_table_file_path(self) -> str:
         return os.path.join(self.get_generated_path(), "TreasureTable.txt")
+
+    def get_equipment_file_path(self) -> str:
+        return os.path.join(self.get_generated_path(), "Equipment.txt")
+
+    def get_tags_path(self) -> str:
+        return os.path.join(self.get_public_path(), "Tags")
 
     # RunesOfFaerun\Public\RunesOfFaerun\RootTemplates
     def get_rt_dir(self) -> str:
