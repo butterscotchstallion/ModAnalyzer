@@ -42,11 +42,18 @@ class Analyzer:
         else:
             pprint.pp(input)
 
-    def get_colored_status(self, status: bool, ok_str="FOUND", fail_str="NOT FOUND"):
+    def get_colored_status(
+        self,
+        status: bool,
+        ok_str="FOUND",
+        fail_str="NOT FOUND",
+        ok_color=typer.colors.GREEN,
+        fail_color=typer.colors.RED,
+    ):
         if status:
-            return typer.style(ok_str, fg=typer.colors.GREEN, bold=True)
+            return typer.style(ok_str, fg=ok_color, bold=True)
         else:
-            return typer.style(fail_str, fg=typer.colors.RED, bold=True)
+            return typer.style(fail_str, fg=fail_color, bold=True)
 
     def get_meta_csv_path(self, analyzer: StructureAnalyzer) -> str:
         """
@@ -221,6 +228,7 @@ class Analyzer:
     ):
         se_analyzer = SEAnalyzer(structure_analyzer=structure_analyzer)
         se_report = se_analyzer.generate_report(mod_dirs)
+
         """
         has_se_dir: bool = False
         has_config: bool = False
@@ -238,13 +246,81 @@ class Analyzer:
         ]
 
         if se_report.has_se_dir:
+            ### Config
             se_report_table.append(
                 [
-                    "Config",
+                    "Config file",
                     self.get_colored_status(se_report.has_config),
                     self.path_analyzer.get_colored_path(se_analyzer.get_config_path()),
                 ]
             )
+
+            if se_report.has_config:
+                # Parse error
+                if se_report.config_parse_error:
+                    se_report_table.append(
+                        [
+                            "Config Parse Error",
+                            self.get_colored_status(
+                                len(se_report.config_parse_error) == 0,
+                                ok_str="OK",
+                                fail_str="FAIL",
+                            ),
+                            typer.style(
+                                se_report.config_parse_error,
+                                fg=typer.colors.RED,
+                                bold=True,
+                            ),
+                        ]
+                    )
+                else:
+                    # Missing fields
+                    has_invalid_fields = False
+
+                    missing_fields = se_report.config_missing_fields
+                    has_missing_fields = len(missing_fields) > 0
+                    missing_color = (
+                        typer.colors.RED if has_missing_fields else typer.colors.GREEN
+                    )
+                    se_report_table.append(
+                        [
+                            "Config Required Fields",
+                            self.get_colored_status(not has_missing_fields),
+                            typer.style(
+                                ", ".join(se_analyzer.get_required_config_fields()),
+                                fg=missing_color,
+                                bold=True,
+                            ),
+                        ]
+                    )
+
+                    # Check invalid fields
+                    if not has_missing_fields:
+                        invalid_fields = se_report.config_invalid_fields
+                        has_invalid_fields = len(invalid_fields) > 0
+                        invalid_fields_summary = []
+                        for field in invalid_fields:
+                            invalid_fields_summary.append(
+                                f"{field}: {invalid_fields[field]}"
+                            )
+                        se_report_table.append(
+                            [
+                                "Config Invalid Fields",
+                                self.get_colored_status(
+                                    not has_invalid_fields, fail_str="FAIL"
+                                ),
+                                typer.style(
+                                    os.linesep.join(invalid_fields_summary),
+                                    fg=typer.colors.RED,
+                                    bold=True,
+                                ),
+                            ]
+                        )
+
+                    if not has_missing_fields and not has_invalid_fields:
+                        pass
+
+            ### Directories
             se_report_table.append(
                 [
                     "Server dir",
@@ -253,22 +329,67 @@ class Analyzer:
                 ]
             )
 
-            if se_report.config_parse_error:
+            if (
+                not se_report.has_bootstrap_server
+                and not se_report.has_bootstrap_client
+            ):
                 se_report_table.append(
                     [
-                        "Config Parse Error",
-                        self.get_colored_status(True, ok_str="OK", fail_str="FAIL"),
-                        se_report.config_parse_error,
+                        "Bootstrap files",
+                        self.get_colored_status(se_report.has_bootstrap_client),
+                        os.linesep.join(
+                            [
+                                self.path_analyzer.get_colored_path(
+                                    se_analyzer.get_bootstrap_server_file_path()
+                                ),
+                                self.path_analyzer.get_colored_path(
+                                    se_analyzer.get_bootstrap_client_file_path()
+                                ),
+                                "You need at least one of these",
+                            ]
+                        ),
+                    ]
+                )
+            else:
+                se_report_table.append(
+                    [
+                        "BootstrapServer file",
+                        self.get_colored_status(
+                            se_report.has_bootstrap_server,
+                            fail_color=typer.colors.YELLOW,
+                        ),
+                        self.path_analyzer.get_colored_path(
+                            se_analyzer.get_bootstrap_server_file_path()
+                        ),
+                    ]
+                )
+                se_report_table.append(
+                    [
+                        "BootstrapClient file",
+                        self.get_colored_status(
+                            se_report.has_bootstrap_client,
+                            fail_color=typer.colors.YELLOW,
+                        ),
+                        self.path_analyzer.get_colored_path(
+                            se_analyzer.get_bootstrap_client_file_path()
+                        ),
                     ]
                 )
 
-        typer.echo(os.linesep)
         typer.echo(
             tabulate(
                 se_report_table,
                 headers=["Script Extender Report", "Status", "Details"],
             )
         )
+
+    def print_analysis_duration(self, start_time: float):
+        # Show elapsed time
+        elapsed_seconds = round(time.time() - start_time, 2)
+        elapsed_desc = typer.style(elapsed_seconds, typer.colors.GREEN)
+
+        typer.echo(os.linesep)
+        typer.echo(f"Analysis complete in {elapsed_desc} seconds")
         typer.echo(os.linesep)
 
     def analyze(self, mod_dir: str, **kwargs):
@@ -280,26 +401,23 @@ class Analyzer:
         if "debug_mode" in kwargs:
             debug_mode = kwargs["debug_mode"]
 
-        # Structure
-        self.print_structure_report(
-            mod_dir, structure_analyzer, structure_report, debug_mode
-        )
-
         if structure_report.mod_dir_exists:
+            # Structure
+            self.print_structure_report(
+                mod_dir, structure_analyzer, structure_report, debug_mode
+            )
+
             # Treasure table report
             tt_filename = structure_analyzer.get_treasure_table_file_path()
             rt_dir = structure_analyzer.get_rt_dir()
             has_tt = structure_report.has_treasure_table
             self.print_tt_report(has_tt, tt_filename, rt_dir)
+            typer.echo(os.linesep)
 
-        # SE
-        self.print_se_report(structure_analyzer.mod_dirs, structure_analyzer)
+            # SE
+            self.print_se_report(structure_analyzer.mod_dirs, structure_analyzer)
 
-        # Show elapsed time
-        elapsed_seconds = round(time.time() - start_time, 2)
-        elapsed_desc = typer.style(elapsed_seconds, typer.colors.GREEN)
-        typer.echo(f"Analysis complete in {elapsed_desc} seconds")
-        typer.echo(os.linesep)
+        self.print_analysis_duration(start_time)
 
     def get_tt_report(self, tt_filename: str, rt_dir: str) -> TreasureTableReport:
         tt_analyzer = TreasureTableAnalyzer()

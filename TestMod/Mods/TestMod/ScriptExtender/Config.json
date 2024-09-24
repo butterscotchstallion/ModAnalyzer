@@ -1,3 +1,5 @@
 {
-    "Console": true
+    "RequiredVersion": "lmao",
+    "ModTable": "TestMod",
+    "FeatureFlags": "hi"
 }
