@@ -17,7 +17,9 @@ class StructureGenerator:
     def __init__(self):
         self.logger = logging.getLogger(__file__)
 
-    def create_structure(self, mod_dir: str, mod_uuid: UUID) -> bool:
+    def create_structure(
+        self, mod_dir: str, mod_uuid: UUID, display_tree=False
+    ) -> bool:
         """
         Generates basic mod structure
 
@@ -52,11 +54,6 @@ class StructureGenerator:
                 # SE side
                 target_path_server = se_analyzer.get_server_dir()
 
-                # os.makedirs(target_path_public, exist_ok=False)
-                # os.makedirs(target_path_server, exist_ok=False)
-
-                DisplayTree(mod_dir)
-
                 # Check dirs exist
                 public_path = Path(target_path_public)
                 server_path = Path(target_path_server)
@@ -69,7 +66,13 @@ class StructureGenerator:
                 if create_success:
                     self.logger.debug("Main directories created")
 
+                    if display_tree:
+                        DisplayTree(mod_dir)
+
                 return create_success
+            except FileNotFoundError as not_found_err:
+                self.logger.error(f"Error displaying tree: {not_found_err}")
+                return False
             except FileExistsError as file_exists_err:
                 self.logger.error(
                     f"create_structure: Directory exists: {file_exists_err}"

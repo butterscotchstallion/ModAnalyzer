@@ -1,6 +1,9 @@
 import logging
-import os
+import shutil
 import uuid
+from pathlib import Path
+
+import pytest
 
 from ModAnalyzer.Structure import StructureGenerator
 
@@ -12,10 +15,21 @@ def test_generate_structure():
     mod_uuid = uuid.uuid4()
     mod_name = f"Generated_Test_Mod_{mod_uuid}"
 
-    success = generator.create_structure(mod_name, mod_uuid)
+    success = generator.create_structure(mod_name, mod_uuid, display_tree=True)
 
     assert success, "Failed to generate structure"
 
-    os.remove(mod_name)
+    try:
+        mod_name_path = Path(mod_name)
+        if mod_name_path.exists():
+            shutil.rmtree(mod_name)
+
+            assert not mod_name_path.exists(), "Failed to delete mod dir"
+        else:
+            pytest.fail(f"Failed to create mod dir {mod_name}")
+    except Exception as err:
+        err_msg = f"Error deleting mod dir: {err}"
+        logger.error(err_msg)
+        pytest.fail(err_msg)
 
     logger.debug(f"Removed test mod dir {mod_name}")
