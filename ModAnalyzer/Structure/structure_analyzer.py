@@ -51,7 +51,6 @@ class StructureAnalyzer:
         self.logger = logging.getLogger(__file__)
         self.mod_dir_name = ""
         self.path_analyzer = PathAnalyzer()
-        self.mod_name = kwargs["mod_name"]
 
         if "mod_dir_name" in kwargs:
             self.mod_dir_name = self.get_mod_dir_without_dir_seps(
