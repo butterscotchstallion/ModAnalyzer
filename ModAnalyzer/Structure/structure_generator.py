@@ -235,7 +235,16 @@ class StructureGenerator:
             self.logger.error(f"Unexpected error creating tags dir: {path}")
             return False
 
-    def create_stats_files(self, stats_dir: str):
+    def create_item_combos_file(self, generated_path: str) -> bool:
+        try:
+            item_combos_path = Path(os.path.join(generated_path, "ItemCombos.txt"))
+            item_combos_path.touch()
+            return item_combos_path.exists()
+        except Exception as err:
+            self.logger.error(f"Unexpected error creating stats files: {err}")
+            return False
+
+    def create_stats_files(self, stats_dir: str) -> bool:
         """
         Creates a few stats files as an example
         - Status.txt
@@ -257,12 +266,15 @@ class StructureGenerator:
             if Path(stats_dir).exists():
                 for filename in files:
                     Path(os.path.join(stats_dir, filename)).touch()
+                return True
             else:
                 self.logger.error(
                     "Could not create stats files, stats dir doesn't exist"
                 )
+                return False
         except Exception as err:
             self.logger.error(f"Unexpected error creating stats files: {err}")
+            return False
 
     def create_structure(
         self, mod_dir: str, mod_uuid: UUID, display_tree=False
@@ -332,6 +344,9 @@ class StructureGenerator:
                         structure_analyzer.get_localization_file_path(),
                     )
                     self.create_stats_files(structure_analyzer.get_data_path())
+                    self.create_item_combos_file(
+                        structure_analyzer.get_generated_path()
+                    )
 
                     if display_tree:
                         DisplayTree(mod_dir)
