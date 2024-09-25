@@ -1,6 +1,7 @@
 import json
 import logging
 import os
+import time
 import traceback
 import uuid
 from pathlib import Path
@@ -304,6 +305,7 @@ class StructureGenerator:
 
         if not base_mod_dir_path.exists():
             try:
+                start_time: float = time.time()
                 self.logger.info(f"Creating {mod_dir}")
 
                 structure_analyzer = StructureAnalyzer(
@@ -350,6 +352,10 @@ class StructureGenerator:
 
                     if display_tree:
                         DisplayTree(mod_dir)
+
+                    print(
+                        f"Mod generated in {round(time.time() - start_time, 2)} seconds"
+                    )
 
                 return create_success
             except FileNotFoundError as not_found_err:
