@@ -4,7 +4,7 @@ import os
 import traceback
 import uuid
 from pathlib import Path
-from uuid import UUID
+from uuid import UUID, uuid4
 
 from directory_tree import DisplayTree
 from jinja2 import Environment, FileSystemLoader
@@ -18,8 +18,15 @@ class StructureGenerator:
     Creates basic mod structure
     """
 
-    def __init__(self):
+    def __init__(self, **kwargs):
         self.logger = logging.getLogger(__file__)
+        self.tpl_dir = os.path.join(*["ModAnalyzer", "Structure", "file_templates"])
+        self.tpl_env = Environment(loader=FileSystemLoader(self.tpl_dir))
+        self.mod_name = kwargs["mod_name"]
+
+    def generate_handle(self) -> str:
+        reg_uuid = f"h{uuid4()}"
+        return reg_uuid.replace("-", "g")
 
     def create_meta(self, meta_path: str) -> bool:
         path = Path(meta_path)
@@ -67,6 +74,43 @@ class StructureGenerator:
     def create_root_templates(self, rt_dir: str):
         pass
 
+    def create_localization_files(
+        self, localization_dir_path: str, localization_file_path: str
+    ) -> bool:
+        loca_file_exists = False
+        loca_dir_exists = False
+        try:
+            loca_path = Path(localization_dir_path)
+
+            if not loca_path.exists():
+                loca_path.mkdir(exist_ok=False, parents=True)
+                loca_dir_exists = loca_path.exists()
+
+                # Create localization file
+                if loca_dir_exists:
+                    self.logger.debug(f"Localization directory created: {loca_path}")
+                    loca_file_path = Path(localization_file_path)
+                    loca_file_path.touch()
+                    loca_file_exists = loca_file_path.exists()
+
+                    if loca_file_exists:
+                        self.logger.debug(
+                            f"Localization file created: {localization_file_path}"
+                        )
+
+                return loca_dir_exists and loca_file_exists
+            else:
+                self.logger.error(
+                    f"Localization directory exists at {localization_dir_path}"
+                )
+                return False
+        except Exception as err:
+            self.logger.error(
+                f"Unexpected error creating localization directory: {err}"
+            )
+            # print(traceback.format_exception(err))
+            return False
+
     def create_treasure_table(self, tt_file_path: str) -> bool:
         try:
             tt_path = Path(tt_file_path)
@@ -99,17 +143,15 @@ class StructureGenerator:
         self, replacements: dict, tpl_filename: str
     ) -> str:
         try:
-            tpl_dir = os.path.join(*["ModAnalyzer", "Structure", "file_templates"])
-            dir_path = Path(tpl_dir)
-            tpl_path = Path(os.path.join(tpl_dir, tpl_filename))
+            dir_path = Path(self.tpl_dir)
+            tpl_path = Path(os.path.join(self.tpl_dir, tpl_filename))
             is_dir_valid = dir_path.exists() and dir_path.is_dir()
             is_tpl_valid = tpl_path.exists() and tpl_path.is_file()
             if is_dir_valid and is_tpl_valid:
-                environment = Environment(loader=FileSystemLoader(tpl_dir))
-                template = environment.get_template(tpl_filename)
+                template = self.tpl_env.get_template(tpl_filename)
                 return template.render(**replacements)
             else:
-                self.logger.error(f"Template directory {tpl_dir} does not exist")
+                self.logger.error(f"Template directory {self.tpl_dir} does not exist")
                 return ""
         except Exception as err:
             self.logger.error(f"Error creating template: {err}")
@@ -133,8 +175,8 @@ class StructureGenerator:
                     "MA_TAG_DISPLAY_DESCRIPTION_HANDLE": "tag desc handle",
                     "MA_TAG_DESCRIPTION": "tag description",
                     "MA_TAG_DISPLAY_NAME_HANDLE": "tag display name handle",
-                    "MA_TAG_ICON_NAME": "icon name",
-                    "MA_TAG_NAME": "Tag Name",
+                    "MA_TAG_ICON_NAME": "",
+                    "MA_TAG_NAME": "Sample Tag Name",
                     "MA_TAG_UUID": uuid.uuid4(),
                 }
                 template = self.get_template_with_replacements(replacements, "tag.lsx")
@@ -182,12 +224,6 @@ class StructureGenerator:
         """
         pass
 
-    def create_localization_files(self):
-        """
-        Create normal folder/file and the one for books
-        """
-        pass
-
     def create_structure(
         self, mod_dir: str, mod_uuid: UUID, display_tree=False
     ) -> bool:
@@ -218,7 +254,9 @@ class StructureGenerator:
             try:
                 self.logger.info(f"Creating {mod_dir}")
 
-                structure_analyzer = StructureAnalyzer(mod_dir_name=mod_dir)
+                structure_analyzer = StructureAnalyzer(
+                    mod_dir_name=mod_dir, mod_name=self.mod_name
+                )
                 se_analyzer = SEAnalyzer(structure_analyzer=structure_analyzer)
                 # First deepest path
                 target_path_data = structure_analyzer.get_data_path()
@@ -249,7 +287,10 @@ class StructureGenerator:
                     self.create_tags_directory_and_sample_tag(
                         structure_analyzer.get_tags_path()
                     )
-                    self.create_localization_files()
+                    self.create_localization_files(
+                        structure_analyzer.get_localization_dir_path(),
+                        structure_analyzer.get_localization_file_path(),
+                    )
                     self.create_stats_files()
 
                     if display_tree:

@@ -394,9 +394,10 @@ class Analyzer:
         typer.echo(f"Analysis complete in {elapsed_desc} seconds")
         typer.echo(os.linesep)
 
-    def analyze(self, mod_dir: str, **kwargs):
+    def analyze(self, mod_dir: str, mod_name: str, **kwargs):
         start_time: float = time.time()
-        structure_analyzer = Structure.StructureAnalyzer()
+        structure_analyzer = Structure.StructureAnalyzer(mod_name=mod_name)
+        mod_dir = structure_analyzer.get_mod_dir_without_dir_seps(mod_dir)
         structure_report = structure_analyzer.generate_report(mod_dir)
         debug_mode = False
 

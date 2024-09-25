@@ -44,22 +44,27 @@ class StructureAnalyzer:
     """
 
     mod_dir_name: str = ""
+    mod_name: str = ""
     mod_dirs: list[str] = []
 
     def __init__(self, **kwargs):
         self.logger = logging.getLogger(__file__)
         self.mod_dir_name = ""
         self.path_analyzer = PathAnalyzer()
+        self.mod_name = kwargs["mod_name"]
 
         if "mod_dir_name" in kwargs:
-            self.mod_dir_name = self.get_mod_name_without_dir_seps(
+            self.mod_dir_name = self.get_mod_dir_without_dir_seps(
                 kwargs["mod_dir_name"]
             )
 
-    def get_mod_name_without_dir_seps(self, mod_dir_name: str) -> str:
+        self.mod_name = self.mod_dir_name
+        if "mod_name" in kwargs:
+            self.mod_name = kwargs["mod_name"]
+
+    def get_mod_dir_without_dir_seps(self, mod_dir_name: str) -> str:
         mod_name = mod_dir_name.rstrip(os.sep)
         mod_name = mod_dir_name.rstrip("/")
-
         return mod_name
 
     def generate_report(
@@ -79,7 +84,7 @@ class StructureAnalyzer:
         """
         report = StructureReport()
 
-        self.mod_dir_name = self.get_mod_name_without_dir_seps(mod_dir_name)
+        self.mod_dir_name = self.get_mod_dir_without_dir_seps(mod_dir_name)
 
         # Check exists
         report.mod_dir_exists = os.path.exists(self.mod_dir_name)
@@ -131,8 +136,9 @@ class StructureAnalyzer:
         # TODO: check if extension needs to be case sensitive
         lsx_files = []
         try:
-            lsx_files = list(directory.glob("*.lsx", case_sensitive=False)) + list(
-                directory.glob("*.lsf.lsx")
+            lsf_lsx_files = list(directory.glob("*.lsf.lsx"))
+            lsx_files = (
+                list(directory.glob("*.lsx", case_sensitive=False)) + lsf_lsx_files
             )
         except Exception as err:
             self.logger.error(f"Unexpected error in get_lsx_files_in_dir: {err}")
@@ -173,6 +179,15 @@ class StructureAnalyzer:
 
     def get_tags_path(self) -> str:
         return os.path.join(self.get_public_path(), "Tags")
+
+    def get_localization_dir_path(self) -> str:
+        return os.path.join(*[self.mod_dir_name, "Localization", "English"])
+
+    def get_localization_file_path(self) -> str:
+        if not self.mod_name:
+            raise ValueError("mod_name is empty!")
+        mod_name_with_lang = f"{self.mod_name}-English.xml"
+        return os.path.join(self.get_localization_dir_path(), mod_name_with_lang)
 
     # RunesOfFaerun\Public\RunesOfFaerun\RootTemplates
     def get_rt_dir(self) -> str:

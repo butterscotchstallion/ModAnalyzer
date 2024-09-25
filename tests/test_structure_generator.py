@@ -11,7 +11,7 @@ logger = logging.getLogger(__file__)
 
 
 def test_generate_structure():
-    generator = StructureGenerator()
+    generator = StructureGenerator(mod_name="TestMod")
     mod_uuid = uuid.uuid4()
     mod_name = f"Generated_Test_Mod_{mod_uuid}"
 
