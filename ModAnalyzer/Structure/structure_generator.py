@@ -40,9 +40,9 @@ class StructureGenerator:
 
         return created
 
-    def create_se_files(self, mod_name: str, config_path: str) -> bool:
+    def create_se_files(self, mod_name: str, se_analyzer: SEAnalyzer) -> bool:
         try:
-            config_file_path = Path(config_path)
+            config_file_path = Path(se_analyzer.get_config_path())
             if not config_file_path.exists():
                 config_file_path.touch(exist_ok=False)
                 exists = config_file_path.exists()
@@ -60,6 +60,10 @@ class StructureGenerator:
                     config_file_path.write_text(config_json)
 
                     self.logger.debug(f"Wrote SE config JSON to {config_file_path}")
+
+                    # Create Bootstrap
+                    bootstrap_file_path = se_analyzer.get_bootstrap_server_file_path()
+                    Path(bootstrap_file_path).touch()
 
                     return True
                 else:
@@ -276,7 +280,7 @@ class StructureGenerator:
                     self.logger.debug("Main directories created")
 
                     self.create_meta(structure_analyzer.get_meta_path())
-                    self.create_se_files(mod_dir, se_analyzer.get_config_path())
+                    self.create_se_files(mod_dir, se_analyzer)
                     self.create_root_templates(structure_analyzer.get_rt_dir())
                     self.create_treasure_table(
                         structure_analyzer.get_treasure_table_file_path()
