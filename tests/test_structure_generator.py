@@ -10,7 +10,7 @@ from ModAnalyzer.Structure import StructureGenerator
 logger = logging.getLogger(__file__)
 
 
-def test_generate_structure():
+def test_create_structure():
     generator = StructureGenerator(mod_name="TestMod")
     mod_uuid = uuid.uuid4()
     mod_name = f"Generated_Test_Mod_{mod_uuid}"

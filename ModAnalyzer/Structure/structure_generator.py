@@ -75,8 +75,25 @@ class StructureGenerator:
             self.logger.error(f"create_se_files: Unexpected error: {err}")
             return False
 
-    def create_root_templates(self, rt_dir: str):
-        pass
+    def create_root_templates(self, rt_dir: str) -> bool:
+        try:
+            rt_dir_path = Path(rt_dir)
+            rt_dir_path.mkdir(parents=True, exist_ok=False)
+            rt_dir_exists = rt_dir_path.exists()
+
+            if rt_dir_exists:
+                filename = os.path.join(rt_dir, "merged.lsx")
+                filename_path = Path(filename)
+                filename_path.touch()
+
+                return filename_path.exists()
+            else:
+                self.logger.error(f"Failed to create RT dir: {rt_dir}")
+
+            return False
+        except Exception as err:
+            self.logger.error(f"create_se_files: Unexpected error: {err}")
+            return False
 
     def create_localization_files(
         self, localization_dir_path: str, localization_file_path: str
@@ -218,7 +235,7 @@ class StructureGenerator:
             self.logger.error(f"Unexpected error creating tags dir: {path}")
             return False
 
-    def create_stats_files(self):
+    def create_stats_files(self, stats_dir: str):
         """
         Creates a few stats files as an example
         - Status.txt
@@ -226,7 +243,26 @@ class StructureGenerator:
         - Target.txt
         - Projectile.txt
         """
-        pass
+        try:
+            files: list[str] = [
+                "Status.txt",
+                "Passive.txt",
+                "Target.txt",
+                "Projectile.txt",
+                "Shout.txt",
+                "Character.txt",
+                "Object.txt",
+            ]
+
+            if Path(stats_dir).exists():
+                for filename in files:
+                    Path(os.path.join(stats_dir, filename)).touch()
+            else:
+                self.logger.error(
+                    "Could not create stats files, stats dir doesn't exist"
+                )
+        except Exception as err:
+            self.logger.error(f"Unexpected error creating stats files: {err}")
 
     def create_structure(
         self, mod_dir: str, mod_uuid: UUID, display_tree=False
@@ -295,7 +331,7 @@ class StructureGenerator:
                         structure_analyzer.get_localization_dir_path(),
                         structure_analyzer.get_localization_file_path(),
                     )
-                    self.create_stats_files()
+                    self.create_stats_files(structure_analyzer.get_data_path())
 
                     if display_tree:
                         DisplayTree(mod_dir)
