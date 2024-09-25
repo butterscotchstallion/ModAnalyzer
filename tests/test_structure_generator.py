@@ -15,7 +15,14 @@ def test_create_structure():
     mod_uuid = uuid.uuid4()
     mod_name = f"Generated_Test_Mod_{mod_uuid}"
 
-    success = generator.create_structure(mod_name, mod_uuid, display_tree=True)
+    success = generator.create_structure(
+        mod_name=mod_name,
+        mod_dir=mod_name,
+        mod_uuid=uuid.uuid4(),
+        display_tree=True,
+        mod_author_name="Bruce Wayne",
+        mod_description="I love tests!",
+    )
 
     assert success, "Failed to generate structure"
 

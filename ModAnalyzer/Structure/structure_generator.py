@@ -5,7 +5,7 @@ import time
 import traceback
 import uuid
 from pathlib import Path
-from uuid import UUID, uuid4
+from uuid import uuid4
 
 from directory_tree import DisplayTree
 from jinja2 import Environment, FileSystemLoader
@@ -29,15 +29,26 @@ class StructureGenerator:
         reg_uuid = f"h{uuid4()}"
         return reg_uuid.replace("-", "g")
 
-    def create_meta(self, meta_path: str) -> bool:
-        path = Path(meta_path)
+    def create_meta(self, **kwargs) -> bool:
+        path = Path(kwargs["meta_path"])
         path.touch(exist_ok=False)
         created = path.exists()
 
         if created:
-            self.logger.debug(f"Created meta: {meta_path}")
+            self.logger.debug(f"Created meta: {kwargs["meta_path"]}")
+            version_1_int64 = 36028797018963968
+            replacements = {
+                "MOD_AUTHOR_NAME": kwargs["mod_author_name"],
+                "MOD_DESCRIPTION": kwargs["mod_description"],
+                "MOD_DIR_NAME": kwargs["mod_dir"],
+                "MOD_NAME": self.mod_name,
+                "MOD_UUID": kwargs["mod_uuid"],
+                "MOD_VERSION_INT64": version_1_int64,
+            }
+            template = self.get_template_with_replacements(replacements, "meta.lsx")
+            path.write_text(template)
         else:
-            self.logger.error(f"Error creating meta: {meta_path}")
+            self.logger.error(f"Error creating meta: {kwargs["meta_path"]}")
 
         return created
 
@@ -277,9 +288,7 @@ class StructureGenerator:
             self.logger.error(f"Unexpected error creating stats files: {err}")
             return False
 
-    def create_structure(
-        self, mod_dir: str, mod_uuid: UUID, display_tree=False
-    ) -> bool:
+    def create_structure(self, **kwargs) -> bool:
         """
         Generates basic mod structure
 
@@ -301,6 +310,10 @@ class StructureGenerator:
                         ├── Data/
                         └── TreasureTable.txt
         """
+        mod_dir = kwargs["mod_dir"]
+        mod_uuid = kwargs["mod_uuid"]
+        display_tree = kwargs["display_tree"]
+
         base_mod_dir_path = Path(mod_dir)
 
         if not base_mod_dir_path.exists():
@@ -329,7 +342,13 @@ class StructureGenerator:
                 if create_success:
                     self.logger.debug("Main directories created")
 
-                    self.create_meta(structure_analyzer.get_meta_path())
+                    self.create_meta(
+                        meta_path=structure_analyzer.get_meta_path(),
+                        mod_dir=mod_dir,
+                        mod_uuid=mod_uuid,
+                        mod_author_name=kwargs["mod_author_name"],
+                        mod_description=kwargs["mod_description"],
+                    )
                     self.create_se_files(mod_dir, se_analyzer)
                     self.create_root_templates(structure_analyzer.get_rt_dir())
                     self.create_treasure_table(
