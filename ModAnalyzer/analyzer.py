@@ -159,21 +159,15 @@ class Analyzer:
         if has_tt:
             tt_report = self.get_tt_report(tt_filename, rt_dir)
 
-            """
-            valid_items: list[ET.Element] = []
-            ignored_items: list[ET.Element] = []
-            treasure_table_entries: list[TreasureTableEntry] = []
-            inaccessible_items: list[str] = []
-            """
-            num_valid_items = typer.style(
-                len(tt_report.valid_items), typer.colors.GREEN
+            num_verified_items = typer.style(
+                len(tt_report.verified_items), typer.colors.GREEN
             )
             tt_report_table = []
             tt_report_table.append(
                 [
-                    "Valid treasure items",
+                    "Verified treasure items",
                     self.get_colored_status(True, ok_str="OK", fail_str="FAIL"),
-                    f"{num_valid_items} items present in treasure tables",
+                    f"{num_verified_items} items present in treasure tables",
                 ]
             )
 

@@ -23,7 +23,7 @@ def test_generate_report(mod_dirs_fixture: list[str]):
         treasure_table_analyzer = TreasureTableAnalyzer()
         tt_report = treasure_table_analyzer.generate_report(tt_filename, rt_dir)
 
-        assert len(tt_report.valid_items) == 13
+        assert len(tt_report.verified_items) == 13
         assert len(tt_report.treasure_table_entries) == 29
 
 
@@ -36,10 +36,10 @@ def test_check_items():
 
     if len(report.inaccessible_items) > 0:
         logger.error(
-            f"Items not in a treasure table: {report.inaccessible_items} ({len(report.valid_items)}, {len(report.inaccessible_items)})"
+            f"Items not in a treasure table: {report.inaccessible_items} ({len(report.verified_items)}, {len(report.inaccessible_items)})"
         )
 
-    assert len(report.valid_items) > 0, "No valid items!"
+    assert len(report.verified_items) > 0, "No verified items!"
     assert len(report.inaccessible_items) == 0, "Some items not verified"
 
 

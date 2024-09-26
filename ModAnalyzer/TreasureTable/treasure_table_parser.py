@@ -25,6 +25,9 @@ class TreasureTableParser:
 
     def get_value_from_line_in_quotes(self, input: str) -> str:
         """Parses value from within quotes"""
+        if '"' not in input:
+            raise ValueError("No quotes found in value")
+
         values: list[str] = self.get_quoted_values(input)
         value = ""
         if len(values):
@@ -69,56 +72,63 @@ class TreasureTableParser:
             everything, otherwise the next entry will have items
             from the previous one.
             """
-            if line.startswith("new treasuretable"):
-                tt_name = self.get_value_from_line_in_quotes(line)
-                can_merge = False
-                subtable_position = ""
-                object_category_name = ""
-                entry_valid = False
-                entry_options = []
+            try:
+                if line.startswith("new treasuretable"):
+                    tt_name = self.get_value_from_line_in_quotes(line)
+                    can_merge = False
+                    subtable_position = ""
+                    object_category_name = ""
+                    entry_valid = False
+                    entry_options = []
 
-            if tt_name:
-                if tt_name not in tt_map:
-                    tt_map[tt_name] = []
+                if tt_name:
+                    if tt_name not in tt_map:
+                        tt_map[tt_name] = []
 
-                if line.startswith("CanMerge"):
-                    can_merge = True
+                    if line.startswith("CanMerge"):
+                        can_merge = True
 
-                if line.startswith("new subtable"):
-                    subtable_position = self.get_value_from_line_in_quotes(line)
+                    if line.startswith("new subtable"):
+                        subtable_position = self.get_value_from_line_in_quotes(line)
 
-                if line.startswith("object category"):
-                    object_category_name = self.get_value_from_line_in_quotes(line)
-                    last_quote_location = line.rfind('"')
-                    if last_quote_location:
-                        # 1,0,0,0,0,0,0,0
-                        option_string = line[last_quote_location + 2 : :]
-                        entry_options = [
-                            int(option) for option in option_string.split(",")
-                        ]
+                    if line.startswith("object category"):
+                        object_category_name = self.get_value_from_line_in_quotes(line)
+                        last_quote_location = line.rfind('"')
+                        if last_quote_location:
+                            # 1,0,0,0,0,0,0,0
+                            option_string = line[last_quote_location + 2 : :]
+                            entry_options = [
+                                int(option) for option in option_string.split(",")
+                            ]
 
-                if object_category_name and subtable_position:
-                    if tt_name not in tt_entry_map:
-                        tt_entry_map[tt_name] = {}
+                    if object_category_name and subtable_position:
+                        if tt_name not in tt_entry_map:
+                            tt_entry_map[tt_name] = {}
 
-                    if object_category_name[0:2] != "I_":
-                        self.logger.error(
-                            f"Invalid object category name: {object_category_name}"
-                        )
-                        entry_valid = False
-                    else:
-                        entry_valid = True
+                        if object_category_name[0:2] != "I_":
+                            self.logger.error(
+                                f"Invalid object category name: {object_category_name}"
+                            )
+                            entry_valid = False
+                        else:
+                            entry_valid = True
 
-                    if object_category_name not in tt_entry_map[tt_name].keys():
-                        tt_entry = TreasureTableEntry(
-                            can_merge=can_merge,
-                            subtable_position=subtable_position,
-                            object_category_name=object_category_name,
-                            is_valid=entry_valid,
-                            options=entry_options,
-                        )
-                        tt_map[tt_name].append(tt_entry)
-                        tt_entry_map[tt_name][object_category_name] = True
+                        if object_category_name not in tt_entry_map[tt_name].keys():
+                            tt_entry = TreasureTableEntry(
+                                can_merge=can_merge,
+                                subtable_position=subtable_position,
+                                object_category_name=object_category_name,
+                                is_valid=entry_valid,
+                                options=entry_options,
+                            )
+                            tt_map[tt_name].append(tt_entry)
+                            tt_entry_map[tt_name][object_category_name] = True
+            except ValueError as value_err:
+                self.logger.error(
+                    f"ValueError encountered in parse_treasure_table: {value_err}"
+                )
+            except Exception:
+                self.logger.error("Unexpected error: {err}")
 
         self.logger.info(f"Parsed {len(tt_map.keys())} treasure tables")
 

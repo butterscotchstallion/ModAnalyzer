@@ -57,12 +57,12 @@ class RootTemplateParser:
 
         return map_key
 
-    def get_valid_nodes(self, root: ET.Element) -> dict[str, list[ET.Element]]:
+    def get_verified_nodes(self, root: ET.Element) -> dict[str, list[ET.Element]]:
         """
         Gets templates children and filters nodes with a DevComment set to
         Ignore
         """
-        valid_nodes: list[ET.Element] = []
+        verified_nodes: list[ET.Element] = []
         ignored_nodes_map: dict[str, bool] = {}
         ignored_nodes: list[ET.Element] = []
         node_children = self.get_templates_children(root)
@@ -83,11 +83,11 @@ class RootTemplateParser:
                 if map_key in ignored_nodes_map:
                     ignored_nodes.append(node_child)
                 else:
-                    valid_nodes.append(node_child)
+                    verified_nodes.append(node_child)
 
-        self.logger.info(f"Found {len(valid_nodes)} nodes in RT")
+        self.logger.info(f"Found {len(verified_nodes)} nodes in RT")
 
-        return {"valid": valid_nodes, "ignored": ignored_nodes}
+        return {"verified": verified_nodes, "ignored": ignored_nodes}
 
     def get_templates_children(self, root: ET.Element) -> ET.Element | None:
         # Get region#Templates

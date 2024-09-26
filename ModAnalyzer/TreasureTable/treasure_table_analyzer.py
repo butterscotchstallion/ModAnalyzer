@@ -1,6 +1,7 @@
 import logging
 import xml.etree.ElementTree as ET
 from pathlib import Path
+from typing import TypedDict
 
 from ModAnalyzer import Structure, TreasureTable
 from ModAnalyzer.Structure.path_analyzer import PathAnalyzer
@@ -8,11 +9,16 @@ from ModAnalyzer.TreasureTable.models.treasure_table_entry import TreasureTableE
 
 
 class TreasureTableReport:
-    valid_items: list[ET.Element] = []
+    verified_items: list[ET.Element] = []
     ignored_items: list[ET.Element] = []
     treasure_table_entries: list[TreasureTableEntry] = []
     inaccessible_items: list[str] = []
     replacement_entries: set[str] = set()
+
+
+ItemSummary = TypedDict(
+    "ItemSummary", {"verified": list[ET.Element], "ignored": list[ET.Element]}
+)
 
 
 class TreasureTableAnalyzer:
@@ -30,15 +36,15 @@ class TreasureTableAnalyzer:
 
     def get_item_list(
         self, rt_parser: TreasureTable.RootTemplateParser, rt_dir: str
-    ) -> dict[str, list[ET.Element]]:
+    ) -> ItemSummary:
         """
         1. Find LSX files in RT dir
         2. Parse the XML from each file
         3. Get nodes from each file
         4. Add to list
         """
-        item_summary: dict[str, list[ET.Element]] = {"valid": [], "ignored": []}
-        valid_nodes: list[ET.Element] = []
+        item_summary: ItemSummary = {"verified": [], "ignored": []}
+        verified_nodes: list[ET.Element] = []
         ignored_nodes: list[ET.Element] = []
         structure_analyzer = Structure.StructureAnalyzer()
         rt_dir_path = Path(rt_dir)
@@ -53,20 +59,20 @@ class TreasureTableAnalyzer:
                         if rt_path.exists():
                             rt_xml = rt_path.read_text()
                             root_node = ET.fromstring(rt_xml)
-                            file_summary = rt_parser.get_valid_nodes(root_node)
-                            # All valid nodes
-                            valid_nodes += file_summary["valid"]
+                            file_summary = rt_parser.get_verified_nodes(root_node)
+                            # All verified nodes
+                            verified_nodes += file_summary["verified"]
                             # All ignored nodes
                             ignored_nodes += file_summary["ignored"]
 
                             self.logger.debug(
-                                f"Added {len(file_summary["valid"])} ({len(file_summary["ignored"])} ignored) nodes from {rt_path.stem}{rt_path.suffix}"
+                                f"Added {len(file_summary["verified"])} ({len(file_summary["ignored"])} ignored) nodes from {rt_path.stem}{rt_path.suffix}"
                             )
                         else:
                             self.logger.error(
                                 f"TreasureTableAnalyzer: RT path {self.path_analyzer.get_colored_path(str(rt_path))} does not exist"
                             )
-                    item_summary["valid"] = valid_nodes
+                    item_summary["verified"] = verified_nodes
                     item_summary["ignored"] = ignored_nodes
                 else:
                     self.logger.error(
@@ -85,6 +91,12 @@ class TreasureTableAnalyzer:
         self,
         tt_map: dict[str, list[TreasureTableEntry]],
     ) -> set[str]:
+        """
+        CanMerge is a property of treasure tables, but the way
+        I implemented this, I made it a property of the items in
+        each treasure table. I thought about refactoring it, but
+        the result is the same this way.
+        """
         replacement_entries: set[str] = set()
 
         for tt_name in tt_map:
@@ -110,8 +122,8 @@ class TreasureTableAnalyzer:
             tt_summary: dict[str, list[str]] = tt_parser.get_summary_from_tt_map(tt_map)
             # Read/parse RTs
             rt_parser = TreasureTable.RootTemplateParser()
-            item_summary = self.get_item_list(rt_parser, rt_dir)
-            rt_nodes = item_summary["valid"]
+            item_summary: ItemSummary = self.get_item_list(rt_parser, rt_dir)
+            rt_nodes = item_summary["verified"]
 
             report.replacement_entries = self.get_replacement_entries_from_map(tt_map)
 
@@ -125,7 +137,7 @@ class TreasureTableAnalyzer:
                 )
                 items_verified: bool = len(verified_stat_names) == len(stats_names)
 
-                report.valid_items = item_summary["valid"]
+                report.verified_items = item_summary["verified"]
                 report.ignored_items = item_summary["ignored"]
                 report.treasure_table_entries = tt_parser.get_flattened_map(tt_map)
 
