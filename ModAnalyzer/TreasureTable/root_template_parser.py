@@ -3,6 +3,8 @@ import os
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
+from ModAnalyzer.TreasureTable.treasure_table_analyzer import ItemSummary
+
 from .xml_utils import (
     attr_is_ignore_comment,
     get_comment_preserving_parser,
@@ -57,7 +59,7 @@ class RootTemplateParser:
 
         return map_key
 
-    def get_verified_nodes(self, root: ET.Element) -> dict[str, list[ET.Element]]:
+    def get_verified_nodes(self, root: ET.Element) -> ItemSummary:
         """
         Gets templates children and filters nodes with a DevComment set to
         Ignore
