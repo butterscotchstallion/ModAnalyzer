@@ -44,6 +44,10 @@ class TreasureTableParser:
     ) -> dict[str, list[TreasureTableEntry]]:
         """
         Parses a list of strings into a TreasureTableEntry list
+
+        tt_name => [
+            TreasureTableEntry,
+        ]
         """
         tt_map: dict[str, list[TreasureTableEntry]] = {}
         tt_name: str = ""
@@ -78,7 +82,7 @@ class TreasureTableParser:
                     tt_map[tt_name] = []
 
                 if line.startswith("CanMerge"):
-                    can_merge = bool(self.get_value_from_line_in_quotes(line))
+                    can_merge = True
 
                 if line.startswith("new subtable"):
                     subtable_position = self.get_value_from_line_in_quotes(line)

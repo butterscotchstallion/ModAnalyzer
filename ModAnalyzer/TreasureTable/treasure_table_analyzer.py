@@ -12,6 +12,7 @@ class TreasureTableReport:
     ignored_items: list[ET.Element] = []
     treasure_table_entries: list[TreasureTableEntry] = []
     inaccessible_items: list[str] = []
+    replacement_entries: set[str] = set()
 
 
 class TreasureTableAnalyzer:
@@ -80,6 +81,19 @@ class TreasureTableAnalyzer:
         finally:
             return item_summary
 
+    def get_replacement_entries_from_map(
+        self,
+        tt_map: dict[str, list[TreasureTableEntry]],
+    ) -> set[str]:
+        replacement_entries: set[str] = set()
+
+        for tt_name in tt_map:
+            for entry in tt_map[tt_name]:
+                if not entry.can_merge:
+                    replacement_entries.add(entry.object_category_name)
+
+        return replacement_entries
+
     def generate_report(self, tt_filename: str, rt_dir: str) -> TreasureTableReport:
         report = TreasureTableReport()
 
@@ -90,12 +104,16 @@ class TreasureTableAnalyzer:
         items_verified: bool = False
 
         if len(tt_lines) > 0:
-            tt_map = tt_parser.parse_treasure_table(tt_lines)
-            tt_summary = tt_parser.get_summary_from_tt_map(tt_map)
+            tt_map: dict[str, list[TreasureTableEntry]] = (
+                tt_parser.parse_treasure_table(tt_lines)
+            )
+            tt_summary: dict[str, list[str]] = tt_parser.get_summary_from_tt_map(tt_map)
             # Read/parse RTs
             rt_parser = TreasureTable.RootTemplateParser()
             item_summary = self.get_item_list(rt_parser, rt_dir)
             rt_nodes = item_summary["valid"]
+
+            report.replacement_entries = self.get_replacement_entries_from_map(tt_map)
 
             self.logger.debug(f"rt_nodes: {rt_nodes}")
 

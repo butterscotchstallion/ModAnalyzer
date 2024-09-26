@@ -10,6 +10,7 @@ class TreasureTableReader:
         lines: list[str] = []
         try:
             with open(filename, "r", encoding="UTF-8") as file:
+                self.logger.debug(f"Reading TT file: {filename}")
                 while line := file.readline():
                     lines.append(line.strip())
         except Exception as err:

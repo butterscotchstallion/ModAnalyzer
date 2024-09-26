@@ -41,3 +41,14 @@ def test_check_items():
 
     assert len(report.valid_items) > 0, "No valid items!"
     assert len(report.inaccessible_items) == 0, "Some items not verified"
+
+
+def test_replacement_entry_detection():
+    analyzer = TreasureTableAnalyzer()
+    report = analyzer.generate_report(
+        "tests/fixture/TreasureTableWithoutReplacementEntryExample.txt",
+        os.path.split(FIXTURE_PATHS["ROOT_TEMPLATE"])[0],
+    )
+
+    assert len(report.treasure_table_entries) == 2, "Failed to find entry"
+    assert len(report.replacement_entries) == 2, "Failed to identify replacement entry"
