@@ -126,13 +126,13 @@ class TreasureTableAnalyzer:
             tt_map: dict[str, list[TreasureTableEntry]] = (
                 tt_parser.parse_treasure_table(tt_lines)
             )
-            report.invalid_entries = self.get_invalid_entries(tt_map)
             tt_summary: dict[str, list[str]] = tt_parser.get_summary_from_tt_map(tt_map)
             # Read/parse RTs
             rt_parser = TreasureTable.RootTemplateParser()
             item_summary: ItemSummary = self.get_item_list(rt_parser, rt_dir)
             rt_nodes = item_summary["verified"]
 
+            report.invalid_entries = self.get_invalid_entries(tt_map)
             report.replacement_entries = self.get_replacement_entries_from_map(tt_map)
 
             self.logger.debug(f"rt_nodes: {rt_nodes}")

@@ -57,9 +57,9 @@ class StructureGenerator:
             config_file_path = Path(se_analyzer.get_config_path())
             if not config_file_path.exists():
                 config_file_path.touch(exist_ok=False)
-                exists = config_file_path.exists()
+                config_exists = config_file_path.exists()
 
-                if exists:
+                if config_exists:
                     config_json = json.dumps(
                         {
                             "RequiredVersion": 20,
@@ -74,10 +74,19 @@ class StructureGenerator:
                     self.logger.debug(f"Wrote SE config JSON to {config_file_path}")
 
                     # Create Bootstrap
-                    bootstrap_file_path = se_analyzer.get_bootstrap_server_file_path()
-                    Path(bootstrap_file_path).touch()
+                    bootstrap_filename = se_analyzer.get_bootstrap_server_file_path()
+                    bootstrap_path = Path(bootstrap_filename)
+                    bootstrap_path.touch()
 
-                    return True
+                    # Write Bootstrap Hello world
+                    hello_world = f'print("Hello world from {mod_name}!")'
+                    bootstrap_path.write_text(hello_world)
+
+                    self.logger.debug(
+                        f"Wrote {bootstrap_path.stem}.lua ({bootstrap_path.stat().st_size} bytes) Hello World"
+                    )
+
+                    return config_exists and bootstrap_path.exists()
                 else:
                     return False
             else:
