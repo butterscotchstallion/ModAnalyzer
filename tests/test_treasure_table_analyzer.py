@@ -43,6 +43,16 @@ def test_check_items():
     assert len(report.inaccessible_items) == 0, "Some items not verified"
 
 
+def test_invalid_entry_detection():
+    analyzer = TreasureTableAnalyzer()
+    report = analyzer.generate_report(
+        "tests/fixture/TreasureTableWithoutReplacementEntryExample.txt",
+        os.path.split(FIXTURE_PATHS["ROOT_TEMPLATE"])[0],
+    )
+
+    assert len(report.invalid_entries) == 1, "Failed to detect invalid items"
+
+
 def test_replacement_entry_detection():
     analyzer = TreasureTableAnalyzer()
     report = analyzer.generate_report(

@@ -1,11 +1,10 @@
 import logging
 import xml.etree.ElementTree as ET
 from pathlib import Path
-from typing import TypedDict
 
 from ModAnalyzer import Structure, TreasureTable
-from ModAnalyzer.Structure.path_analyzer import PathAnalyzer
-from ModAnalyzer.TreasureTable.models.treasure_table_entry import TreasureTableEntry
+from ModAnalyzer.Structure import PathAnalyzer
+from ModAnalyzer.TreasureTable.models import ItemSummary, TreasureTableEntry
 
 
 class TreasureTableReport:
@@ -14,11 +13,7 @@ class TreasureTableReport:
     treasure_table_entries: list[TreasureTableEntry] = []
     inaccessible_items: list[str] = []
     replacement_entries: set[str] = set()
-
-
-ItemSummary = TypedDict(
-    "ItemSummary", {"verified": list[ET.Element], "ignored": list[ET.Element]}
-)
+    invalid_entries: set[str] = set()
 
 
 class TreasureTableAnalyzer:
@@ -65,9 +60,9 @@ class TreasureTableAnalyzer:
                             # All ignored nodes
                             ignored_nodes += file_summary["ignored"]
 
-                            self.logger.debug(
-                                f"Added {len(file_summary["verified"])} ({len(file_summary["ignored"])} ignored) nodes from {rt_path.stem}{rt_path.suffix}"
-                            )
+                            log_msg = f"Added {len(file_summary["verified"])} ({len(file_summary["ignored"])} ignored)"
+                            log_msg += " nodes from {rt_path.stem}{rt_path.suffix}"
+                            self.logger.debug(log_msg)
                         else:
                             self.logger.error(
                                 f"TreasureTableAnalyzer: RT path {self.path_analyzer.get_colored_path(str(rt_path))} does not exist"
@@ -106,6 +101,18 @@ class TreasureTableAnalyzer:
 
         return replacement_entries
 
+    def get_invalid_entries(
+        self, tt_map: dict[str, list[TreasureTableEntry]]
+    ) -> set[str]:
+        invalid_entries = set()
+
+        for tt_name in tt_map:
+            for entry in tt_map[tt_name]:
+                if not entry.is_valid:
+                    invalid_entries.add(entry.object_category_name)
+
+        return invalid_entries
+
     def generate_report(self, tt_filename: str, rt_dir: str) -> TreasureTableReport:
         report = TreasureTableReport()
 
@@ -119,6 +126,7 @@ class TreasureTableAnalyzer:
             tt_map: dict[str, list[TreasureTableEntry]] = (
                 tt_parser.parse_treasure_table(tt_lines)
             )
+            report.invalid_entries = self.get_invalid_entries(tt_map)
             tt_summary: dict[str, list[str]] = tt_parser.get_summary_from_tt_map(tt_map)
             # Read/parse RTs
             rt_parser = TreasureTable.RootTemplateParser()

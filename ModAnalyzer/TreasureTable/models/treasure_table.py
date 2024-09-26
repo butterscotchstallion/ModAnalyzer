@@ -1,4 +1,6 @@
+import xml.etree.ElementTree as ET
 from dataclasses import dataclass
+from typing import TypedDict
 
 from ModAnalyzer.TreasureTable.models.treasure_table_entry import TreasureTableEntry
 
@@ -14,3 +16,8 @@ class TreasureTable:
 
     def __lt__(self, other):
         return len(self.entries) < len(other.entries)
+
+
+ItemSummary = TypedDict(
+    "ItemSummary", {"verified": list[ET.Element], "ignored": list[ET.Element]}
+)

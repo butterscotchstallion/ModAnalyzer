@@ -3,7 +3,7 @@ import os
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
-from ModAnalyzer.TreasureTable.treasure_table_analyzer import ItemSummary
+from ModAnalyzer.TreasureTable.models import ItemSummary
 
 from .xml_utils import (
     attr_is_ignore_comment,

@@ -26,7 +26,7 @@ class TreasureTableParser:
     def get_value_from_line_in_quotes(self, input: str) -> str:
         """Parses value from within quotes"""
         if '"' not in input:
-            raise ValueError("No quotes found in value")
+            raise ValueError(f"No quotes found in value: {input}")
 
         values: list[str] = self.get_quoted_values(input)
         value = ""
