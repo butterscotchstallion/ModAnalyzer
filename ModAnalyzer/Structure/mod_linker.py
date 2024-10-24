@@ -44,20 +44,21 @@ class ModLinker:
         return self._check_dir(public_dir)
 
     def get_mod_dir_symlink_path(self, mod_name: str) -> Path:
-        paths = [self.game_data_dir, "Mods", mod_name]
-
-        dest_path = Path(os.path.join(paths.pop()))
-        if not dest_path.is_dir():
-            dest_path.mkdir()
-
+        """Assemble symlink path using data dir and mod name"""
+        paths: list[str] = [self.game_data_dir, "Mods", mod_name]
         return Path(os.path.join(*paths))
 
     def get_loca_dir_symlink_path(self, mod_name: str) -> Path:
-        paths = [self.game_data_dir, "Localization", "English", f"{mod_name}.xml"]
+        paths: list[str] = [
+            self.game_data_dir,
+            "Localization",
+            "English",
+            f"{mod_name}.xml",
+        ]
         return Path(os.path.join(*paths))
 
     def get_public_dir_symlink_path(self) -> Path:
-        paths = [self.game_data_dir, "Mods", "Public"]
+        paths: list[str] = [self.game_data_dir, "Mods", "Public"]
         return Path(os.path.join(*paths))
 
     def link_mod_dir(self, mod_dir: str) -> bool:
@@ -65,16 +66,33 @@ class ModLinker:
         if not mod_path:
             raise ValueError(f"{mod_dir} does not exist or is not a directory")
 
-        mod_name = os.path.normpath(mod_dir)
-        symlink_path = self.get_mod_dir_symlink_path(mod_name)
-        target_path = Path()
+        self.logger.debug(f"{mod_path} is a directory")
 
-        symlink_path.symlink_to(target_path, target_is_directory=True)
+        try:
+            mod_name = os.path.normpath(mod_dir)
+            symlink_path = self.get_mod_dir_symlink_path(mod_name)
 
-        return target_path.is_symlink()
+            self.logger.debug(
+                f"Attempting to symlink (symlink path -> mod target path) {symlink_path} -> {mod_path}"
+            )
+
+            symlink_path.touch()
+            symlink_path.symlink_to(str(mod_path), target_is_directory=True)
+
+            return symlink_path.is_symlink()
+        except OSError as err:
+            self.logger.error(f"link_mod_dir: Error creating symlink: {err}")
+            return False
+        except Exception as err:
+            self.logger.error(f"link_mod_dir: Unexpected error: {err}")
+            return False
 
     def link_localization_file(self, localization_file: str) -> bool:
-        pass
+        loca_path = self.check_localization_file(localization_file)
+        if not loca_path:
+            raise ValueError(f"{loca_path} does not exist or is not a file")
 
     def link_public_dir(self, public_dir: str) -> bool:
-        pass
+        public_path = self.check_mod_dir(public_dir)
+        if not public_path:
+            raise ValueError(f"{public_path} does not exist or is not a directory")
