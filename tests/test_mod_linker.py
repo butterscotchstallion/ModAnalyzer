@@ -20,16 +20,5 @@ def test_create_symlinks():
     actual_symlink_path = mod_linker.get_mod_dir_symlink_path(mod_dir)
     assert expected_symlink_path == str(actual_symlink_path)
 
-    # Mod dir
-    mod_dir_linked = mod_linker.link_mod_dir(mod_dir)
-    assert mod_dir_linked, "Failed to link mod dir"
-
-    # Public dir
-    public_dir = f"{mod_dir}\\Public"
-    public_dir_linked = mod_linker.link_public_dir(public_dir)
-    assert public_dir_linked, "Failed to link public dir"
-
-    # Localization file
-    loca_file = f"{mod_dir}\\Localization\\English\\{mod_dir}.xml"
-    public_dir_linked = mod_linker.link_localization_file(loca_file)
-    assert public_dir_linked, "Failed to link public dir"
+    linked_mod = mod_linker.link_mod(mod_dir)
+    assert linked_mod, "Failed to link mod"
