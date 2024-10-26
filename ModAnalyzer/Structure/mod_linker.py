@@ -31,6 +31,12 @@ class ModLinker:
             return dir_path
         return False
 
+    def _check_file(self, file: str) -> Path | bool:
+        file_path = Path(file)
+        if file_path.is_file():
+            return file_path
+        return False
+
     ###
     ### Public methods
     ###
@@ -52,9 +58,10 @@ class ModLinker:
         return Path(
             os.path.join(
                 self.game_data_dir,
+                "Data",
                 "Localization",
                 "English",
-                f"{mod_name}.xml",
+                f"{mod_name}",
             )
         )
 
@@ -62,13 +69,18 @@ class ModLinker:
         return Path(os.path.join(self.game_data_dir, "Public"))
 
     def link(self, mod_dir: str, symlink_path: Path, is_dir: bool = True) -> bool:
-        mod_path = self.check_mod_dir(mod_dir)
-        if is_dir and not isinstance(mod_path, Path):
-            raise ValueError(f"{mod_dir} does not exist or is not a directory")
+        if is_dir:
+            path_to_link = self.check_mod_dir(mod_dir)
+            if not isinstance(path_to_link, Path):
+                raise ValueError(f"{mod_dir} does not exist or is not a directory")
+        else:
+            path_to_link = self._check_file(mod_dir)
+            if not isinstance(path_to_link, Path):
+                raise ValueError(f"{mod_dir} does not exist or is not a file")
 
         try:
             self.logger.debug(
-                f"Attempting to symlink (symlink path -> mod target path) {symlink_path} -> {mod_path}"
+                f"Attempting to symlink (symlink path -> mod target path) {symlink_path} -> {path_to_link}"
             )
 
             if os.path.isjunction(symlink_path):
@@ -79,11 +91,13 @@ class ModLinker:
             # os.symlink(symlink_path, mod_path, target_is_directory=True)
             # /D requires elevation
             output = subprocess.check_output(
-                f'mklink /J "{symlink_path}" "{mod_path}"', shell=True
+                f'mklink /J "{symlink_path}" "{path_to_link}"', shell=True
             )
             self.logger.debug(f"mklink output: {output.decode('utf-8')}")
 
             return os.path.isjunction(symlink_path)
+        except subprocess.CalledProcessError as e:
+            self.logger.debug(f"Subprocess error: {e}")
         except OSError as err:
             self.logger.error(f"link_mod_dir: Error creating symlink: {err}")
             return False
@@ -109,4 +123,4 @@ class ModLinker:
         if not public_path:
             raise ValueError(f"{public_path} does not exist or is not a directory")
         symlink_path: Path = self.get_public_dir_symlink_path()
-        return self.link(public_path, symlink_path, True)
+        return self.link(public_dir, symlink_path, True)
