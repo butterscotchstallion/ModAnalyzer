@@ -15,9 +15,21 @@ def test_create_symlinks():
     mod_dir = "TestMod"
     mod_linker = ModLinker(game_dir)
 
-    expected_symlink_path = f"{game_dir}\\Mods\\{mod_dir}"
+    # FakeGameFolder/Data/Mods
+    expected_symlink_path = f"{game_dir}\\Data\\Mods\\{mod_dir}"
     actual_symlink_path = mod_linker.get_mod_dir_symlink_path(mod_dir)
     assert expected_symlink_path == str(actual_symlink_path)
 
+    # Mod dir
     mod_dir_linked = mod_linker.link_mod_dir(mod_dir)
     assert mod_dir_linked, "Failed to link mod dir"
+
+    # Public dir
+    public_dir = f"{mod_dir}\\Public"
+    public_dir_linked = mod_linker.link_public_dir(public_dir)
+    assert public_dir_linked, "Failed to link public dir"
+
+    # Localization file
+    loca_file = f"{mod_dir}\\Localization\\English\\{mod_dir}.xml"
+    public_dir_linked = mod_linker.link_localization_file(loca_file)
+    assert public_dir_linked, "Failed to link public dir"

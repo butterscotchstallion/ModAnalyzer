@@ -1,0 +1,7 @@
+{
+    "RequiredVersion": 20,
+    "ModTable": "TestMod",
+    "FeatureFlags": [
+        "Lua"
+    ]
+}

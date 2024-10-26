@@ -5,6 +5,7 @@ description = "Analyzes BG3 mods"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
+    "black>=24.10.0",
     "coverage>=7.6.1",
     "directory-tree>=1.0.0",
     "jinja2>=3.1.4",
