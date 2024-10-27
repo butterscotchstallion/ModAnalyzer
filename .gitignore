@@ -162,3 +162,5 @@ cython_debug/
 #.idea/
 .venv
 .vscode
+FakeGameFolder/Data/Mods/*
+FakeGameFolder/Public/*

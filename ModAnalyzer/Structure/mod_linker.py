@@ -11,17 +11,17 @@ class ModLinker:
     - Link public
     """
 
-    game_data_dir: str
+    game_data_dir: Path
     game_data_path: Path
 
     def __init__(self, game_data_dir_override: str = ""):
         self.logger = logging.getLogger(__file__)
-        self.game_data_dir = (
+        self.game_data_dir = Path(
             "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Baldurs Gate 3"
         )
 
         if game_data_dir_override:
-            self.game_data_dir = game_data_dir_override
+            self.game_data_dir = Path(game_data_dir_override)
 
         game_data_path = Path(self.game_data_dir)
 
@@ -30,21 +30,24 @@ class ModLinker:
 
         self.game_data_path = game_data_path
 
-    def _check_dir(self, directory: str) -> Path | bool:
-        dir_path = Path(directory)
+    def _check_dir(self, dir_path: Path) -> Path | bool:
         if dir_path.is_dir():
             return dir_path
+        else:
+            self.logger.error(f"{dir_path} is not a directory or does not exist")
         return False
 
     def _check_file(self, file: str) -> Path | bool:
         file_path = Path(file)
         if file_path.is_file():
             return file_path
+        else:
+            self.logger.error(f"{file} is not a file or does not exist")
         return False
 
     def get_localization_files(self, mod_dir: str) -> list[str]:
         """TODO: maybe handle other languages"""
-        loca_path = Path(f"{mod_dir}\\Localization\\English")
+        loca_path = Path(os.path.join(mod_dir, "Localization", "English"))
 
         if not loca_path.is_dir():
             raise RuntimeError(f"{loca_path} does not exist or is not a directory")
@@ -52,7 +55,7 @@ class ModLinker:
         loca_files_pattern = os.path.join(loca_path, "*.xml")
         loca_files = loca_path.glob(loca_files_pattern)
 
-        if len(loca_files) == 0:
+        if not next(loca_files):
             self.logger.error(f"No localization files found in {loca_files_pattern}")
 
         return [str(file) for file in loca_files]
@@ -62,13 +65,24 @@ class ModLinker:
     ###
 
     def check_mod_dir(self, mod_dir: str) -> Path | bool:
-        return self._check_dir(mod_dir)
+        dir_without_ending_slash = mod_dir.rstrip("/")
+        normalized_path = Path(dir_without_ending_slash)
+        if "." in mod_dir:
+            normalized_path = normalized_path.resolve()
+            self.logger.debug(f"Resolving relative directory path to {normalized_path}")
+        return self._check_dir(normalized_path)
 
-    def check_localization_file(self, loca_file: str) -> bool:
-        return Path(loca_file).is_file()
+    def check_localization_file(self, loca_file: str) -> Path | bool:
+        normalized_path = Path(loca_file)
+        if "." in loca_file:
+            normalized_path = normalized_path.resolve()
+            self.logger.debug(
+                f"Resolving relative localization path to {normalized_path}"
+            )
+        return normalized_path if normalized_path.is_file() else False
 
     def check_public_dir(self, public_dir: str) -> Path | bool:
-        return self._check_dir(public_dir)
+        return self._check_dir(Path(public_dir))
 
     def get_mod_dir_symlink_path(self, mod_name: str) -> Path:
         """Assemble symlink path using data dir and mod name"""
@@ -81,7 +95,7 @@ class ModLinker:
                 "Data",
                 "Localization",
                 "English",
-                f"{mod_name}",
+                mod_name,
             )
         )
 
@@ -131,19 +145,29 @@ class ModLinker:
         return self.link(mod_dir, symlink_path, True)
 
     def link_localization_file(self, mod_dir: str) -> bool:
-        localization_file = f"{mod_dir}\\Localization\\English\\{mod_dir}-English.xml"
+        mod_name = os.path.basename(mod_dir)
+        localization_file = os.path.join(
+            mod_dir, "Localization", "English", f"{mod_name}-English.xml"
+        )
+
+        self.logger.debug(f"Loca path before resolve: {localization_file}")
+
         loca_path = self.check_localization_file(localization_file)
         if not loca_path:
-            raise ValueError(f"{loca_path} does not exist or is not a file")
-        mod_name = os.path.basename(localization_file)
+            raise ValueError(
+                f"link_localization_file: {localization_file} does not exist or is not a file"
+            )
+
         symlink_path: Path = self.get_loca_dir_symlink_path(mod_name)
         return self.link(localization_file, symlink_path, False)
 
     def link_public_dir(self, mod_dir: str) -> bool:
-        public_dir = f"{mod_dir}\\Public"
+        public_dir = os.path.join(mod_dir, "Public")
         public_path = self.check_mod_dir(public_dir)
         if not public_path:
-            raise ValueError(f"{public_path} does not exist or is not a directory")
+            raise ValueError(
+                f"link_public_dir: {public_dir} does not exist or is not a directory"
+            )
         symlink_path: Path = self.get_public_dir_symlink_path()
         return self.link(public_dir, symlink_path, True)
 
