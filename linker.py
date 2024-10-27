@@ -15,9 +15,9 @@ def link(mod_directory: str):
     success = linker.link_mod(mod_directory)
 
     if success:
-        typer.echo(f"Successfully linked {mod_directory}")
+        typer.echo(f"Successfully linked {mod_directory} in {linker.game_data_path}")
     else:
-        typer.echo(f"Failed to link {mod_directory}")
+        typer.echo(f"Failed to link {mod_directory} in {linker.game_data_path}")
 
 
 if __name__ == "__main__":

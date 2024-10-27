@@ -161,8 +161,7 @@ class StructureAnalyzer:
     def get_stats_path(self) -> str:
         if not self.mod_dir_name:
             raise ValueError("Mod dir name is empty")
-        dir_parts = [self.get_public_path(), self.mod_dir_name, "Stats"]
-        return os.path.join(*dir_parts)
+        return os.path.join(self.get_public_path(), self.mod_dir_name, "Stats")
 
     def get_generated_path(self) -> str:
         return os.path.join(self.get_stats_path(), "Generated")
@@ -190,8 +189,7 @@ class StructureAnalyzer:
 
     # RunesOfFaerun\Public\RunesOfFaerun\RootTemplates
     def get_rt_dir(self) -> str:
-        rt_dir_parts = [self.get_public_path(), self.mod_dir_name, "RootTemplates"]
-        return os.path.join(*rt_dir_parts)
+        return os.path.join(self.get_public_path(), self.mod_dir_name, "RootTemplates")
 
     def get_rt_dir_path(self) -> Path:
         return Path(self.get_rt_dir())
@@ -247,8 +245,9 @@ class StructureAnalyzer:
         return meta_exists or meta_mt_exists
 
     def has_root_templates(self, mod_dirs: list[str]) -> bool:
-        rt_path_parts = [self.get_public_path(), self.mod_dir_name, "RootTemplates"]
-        rt_dir = os.path.join(*rt_path_parts)
+        rt_dir = os.path.join(
+            self.get_public_path(), self.mod_dir_name, "RootTemplates"
+        )
         has_rt_dir = self.is_path_in_mod_dirs(mod_dirs, rt_dir)
 
         if has_rt_dir:

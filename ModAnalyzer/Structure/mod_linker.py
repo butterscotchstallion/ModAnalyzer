@@ -84,23 +84,36 @@ class ModLinker:
     def check_public_dir(self, public_dir: str) -> Path | bool:
         return self._check_dir(Path(public_dir))
 
-    def get_mod_dir_symlink_path(self, mod_name: str) -> Path:
+    def get_mod_dir_symlink_path(self, mod_dir: str) -> Path:
         """Assemble symlink path using data dir and mod name"""
+        mod_name = self.get_mod_name_from_dir(mod_dir)
         return Path(os.path.join(self.game_data_dir, "Data", "Mods", mod_name))
 
-    def get_loca_dir_symlink_path(self, mod_name: str) -> Path:
+    def get_mod_name_from_dir(self, mod_dir: str) -> str:
+        return os.path.basename(os.path.normpath(mod_dir))
+
+    def get_loca_dir_symlink_path(self, mod_dir: str) -> Path:
+        mod_name = self.get_mod_name_from_dir(mod_dir)
         return Path(
             os.path.join(
                 self.game_data_dir,
                 "Data",
                 "Localization",
                 "English",
-                mod_name,
+                f"{mod_name}.xml",
             )
         )
 
-    def get_public_dir_symlink_path(self) -> Path:
-        return Path(os.path.join(self.game_data_dir, "Public"))
+    def get_public_dir_symlink_path(self, mod_dir: str) -> Path:
+        mod_name = self.get_mod_name_from_dir(mod_dir)
+        return Path(
+            os.path.join(
+                self.game_data_dir,
+                "Data",
+                "Public",
+                mod_name,
+            )
+        )
 
     def link(self, mod_dir: str, symlink_path: Path, is_dir: bool = True) -> bool:
         if is_dir:
@@ -132,6 +145,7 @@ class ModLinker:
             return os.path.isjunction(symlink_path)
         except subprocess.CalledProcessError as e:
             self.logger.debug(f"Subprocess error: {e}")
+            return False
         except OSError as err:
             self.logger.error(f"link_mod_dir: Error creating symlink: {err}")
             return False
@@ -140,12 +154,11 @@ class ModLinker:
             return False
 
     def link_mod_dir(self, mod_dir: str) -> bool:
-        mod_name = os.path.basename(os.path.normpath(mod_dir))
-        symlink_path = self.get_mod_dir_symlink_path(mod_name)
+        symlink_path = self.get_mod_dir_symlink_path(mod_dir)
         return self.link(mod_dir, symlink_path, True)
 
     def link_localization_file(self, mod_dir: str) -> bool:
-        mod_name = os.path.basename(mod_dir)
+        mod_name = self.get_mod_name_from_dir(mod_dir)
         localization_file = os.path.join(
             mod_dir, "Localization", "English", f"{mod_name}-English.xml"
         )
@@ -158,35 +171,40 @@ class ModLinker:
                 f"link_localization_file: {localization_file} does not exist or is not a file"
             )
 
-        symlink_path: Path = self.get_loca_dir_symlink_path(mod_name)
+        symlink_path: Path = self.get_loca_dir_symlink_path(mod_dir)
         return self.link(localization_file, symlink_path, False)
 
     def link_public_dir(self, mod_dir: str) -> bool:
-        public_dir = os.path.join(mod_dir, "Public")
-        public_path = self.check_mod_dir(public_dir)
-        if not public_path:
+        mod_name = self.get_mod_name_from_dir(mod_dir)
+        mod_public_dir = os.path.join(mod_dir, "Public", mod_name)
+        mod_public_path = self.check_mod_dir(mod_public_dir)
+        if not mod_public_path:
             raise ValueError(
-                f"link_public_dir: {public_dir} does not exist or is not a directory"
+                f"link_public_dir: {mod_public_dir} does not exist or is not a directory"
             )
-        symlink_path: Path = self.get_public_dir_symlink_path()
-        return self.link(public_dir, symlink_path, True)
+        symlink_path: Path = self.get_public_dir_symlink_path(mod_name)
+        return self.link(mod_public_dir, symlink_path, True)
 
     def link_mod(self, mod_dir: str) -> bool:
         """
         Links mod dirs/localization
         """
+
+        # Mod dir
         linked_mod_dir_success = self.link_mod_dir(mod_dir)
         if linked_mod_dir_success:
             self.logger.info("Linked mod dir successfully")
         else:
             self.logger.error("Failed to link mod dir")
 
+        # Public
         linked_public_dir_success = self.link_public_dir(mod_dir)
         if linked_public_dir_success:
             self.logger.info("Linked public dir successfully")
         else:
             self.logger.error("Failed to link public dir")
 
+        # Localization
         linked_localization_file_success = self.link_localization_file(mod_dir)
         if linked_localization_file_success:
             self.logger.info("Linked localization file successfully")
@@ -197,4 +215,55 @@ class ModLinker:
             linked_mod_dir_success
             and linked_public_dir_success
             and linked_localization_file_success
+        )
+
+    def remove_mod_links(self, mod_dir: str):
+        removed_mod_dir_link = False
+        mod_dir_link_path = self.get_mod_dir_symlink_path(mod_dir)
+
+        if mod_dir_link_path.exists():
+            if mod_dir_link_path.is_junction():
+                os.remove(mod_dir_link_path)
+
+                if not mod_dir_link_path.exists():
+                    self.logger.info(f"Removed mod link: {mod_dir_link_path}")
+                    removed_mod_dir_link = True
+            else:
+                self.logger.error(f"{mod_dir_link_path} is not a junction")
+        else:
+            self.logger.error(f"{mod_dir_link_path} does not exist")
+
+        removed_public_dir_link = False
+        public_dir_link_path = self.get_public_dir_symlink_path(mod_dir)
+        if public_dir_link_path.exists():
+            if public_dir_link_path.is_junction():
+                os.remove(public_dir_link_path)
+
+                if not public_dir_link_path.exists():
+                    self.logger.info(f"Removed public link: {public_dir_link_path}")
+                    removed_public_dir_link = True
+            else:
+                self.logger.error(f"{public_dir_link_path} is not a junction")
+        else:
+            self.logger.error(f"{public_dir_link_path} does not exist")
+
+        removed_localization_file_link = False
+        localization_file_link_path = self.get_loca_dir_symlink_path(mod_dir)
+        if localization_file_link_path.exists():
+            if localization_file_link_path.is_junction():
+                os.remove(localization_file_link_path)
+                if not localization_file_link_path.exists():
+                    self.logger.info(
+                        f"Removed localization file link: {localization_file_link_path}"
+                    )
+                    removed_localization_file_link = True
+            else:
+                self.logger.error(f"{localization_file_link_path} is not a junction")
+        else:
+            self.logger.error(f"{localization_file_link_path} does not exist")
+
+        return (
+            removed_mod_dir_link
+            and removed_public_dir_link
+            and removed_localization_file_link
         )

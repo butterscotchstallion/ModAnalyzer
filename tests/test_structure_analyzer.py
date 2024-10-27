@@ -15,17 +15,16 @@ def test_get_dirs(mod_dirs_fixture: list[str]):
     report = analyzer.generate_report(TEST_MOD_NAME, mod_dirs_fixture)
 
     # pprint.pp(report)
-    public_path = [TEST_MOD_NAME, "Public"]
     assert analyzer.get_public_path() == os.path.join(
-        *public_path
+        TEST_MOD_NAME, "Public"
     ), "Public path incorrect"
 
-    stats_path = os.path.join(*public_path + [TEST_MOD_NAME, "Stats"])
+    stats_path = os.path.join(TEST_MOD_NAME, "Public", TEST_MOD_NAME, "Stats")
     assert analyzer.get_stats_path() == stats_path, "Stats path is incorrect"
 
     # TestMod\Public\TestMod\RootTemplates
     assert analyzer.get_rt_dir() == os.path.join(
-        *public_path, TEST_MOD_NAME, "RootTemplates"
+        TEST_MOD_NAME, "Public", TEST_MOD_NAME, "RootTemplates"
     ), "Root templates path is incorrect"
 
     assert analyzer.get_generated_path() == os.path.join(

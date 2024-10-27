@@ -8,8 +8,9 @@ logger = logging.getLogger(__name__)
 
 def test_path_exists():
     analyzer = PathAnalyzer()
-    path_parts = ["tests", "fixture", "dirs.json"]
-    report: PathAnalyzerReport = analyzer.get_path_report(os.path.join(*path_parts))
+    report: PathAnalyzerReport = analyzer.get_path_report(
+        os.path.join("tests", "fixture", "dirs.json")
+    )
 
     assert report.paths["tests"]["exists"]
     assert report.paths["fixture"]["exists"]
@@ -20,8 +21,9 @@ def test_path_exists():
 
 def test_path_doesnt_exist():
     analyzer = PathAnalyzer()
-    path_parts = ["tests", "woof", "meow"]
-    report: PathAnalyzerReport = analyzer.get_path_report(os.path.join(*path_parts))
+    report: PathAnalyzerReport = analyzer.get_path_report(
+        os.path.join("tests", "woof", "meow")
+    )
 
     assert report.paths["tests"]["exists"]
     assert not report.paths["woof"]["exists"]

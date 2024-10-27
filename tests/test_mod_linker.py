@@ -17,3 +17,6 @@ def test_create_symlinks():
 
     linked_mod = mod_linker.link_mod(mod_dir)
     assert linked_mod, "Failed to link mod"
+
+    removed_mod_links = mod_linker.remove_mod_links(mod_dir)
+    assert removed_mod_links, "Failed to remove mod links"
