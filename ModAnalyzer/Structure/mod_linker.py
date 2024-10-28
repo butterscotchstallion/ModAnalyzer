@@ -92,6 +92,9 @@ class ModLinker:
     def get_mod_name_from_dir(self, mod_dir: str) -> str:
         return os.path.basename(os.path.normpath(mod_dir))
 
+    def get_localization_filename(self, mod_name: str) -> str:
+        return f"{mod_name}-English.xml"
+
     def get_loca_dir_symlink_path(self, mod_dir: str) -> Path:
         mod_name = self.get_mod_name_from_dir(mod_dir)
         return Path(
@@ -100,7 +103,7 @@ class ModLinker:
                 "Data",
                 "Localization",
                 "English",
-                f"{mod_name}.xml",
+                self.get_localization_filename(mod_name),
             )
         )
 
@@ -160,7 +163,7 @@ class ModLinker:
     def link_localization_file(self, mod_dir: str) -> bool:
         mod_name = self.get_mod_name_from_dir(mod_dir)
         localization_file = os.path.join(
-            mod_dir, "Localization", "English", f"{mod_name}-English.xml"
+            mod_dir, "Localization", "English", self.get_localization_filename(mod_name)
         )
 
         self.logger.debug(f"Loca path before resolve: {localization_file}")
@@ -217,51 +220,29 @@ class ModLinker:
             and linked_localization_file_success
         )
 
-    def remove_mod_links(self, mod_dir: str):
-        removed_mod_dir_link = False
+    def remove_link_if_exists(self, link_path: Path) -> bool:
+        removed_link = False
+        if link_path.is_junction():
+            os.remove(link_path)
+            if not link_path.is_junction():
+                self.logger.info(f"Removed mod link: {link_path}")
+                removed_link = True
+        else:
+            self.logger.error(f"remove_mod_links: {link_path} is not a junction")
+        return removed_link
+
+    def remove_mod_links(self, mod_dir: str) -> bool:
+        # Mod dir
         mod_dir_link_path = self.get_mod_dir_symlink_path(mod_dir)
-
-        if mod_dir_link_path.exists():
-            if mod_dir_link_path.is_junction():
-                os.remove(mod_dir_link_path)
-
-                if not mod_dir_link_path.exists():
-                    self.logger.info(f"Removed mod link: {mod_dir_link_path}")
-                    removed_mod_dir_link = True
-            else:
-                self.logger.error(f"{mod_dir_link_path} is not a junction")
-        else:
-            self.logger.error(f"{mod_dir_link_path} does not exist")
-
-        removed_public_dir_link = False
+        removed_mod_dir_link = self.remove_link_if_exists(mod_dir_link_path)
+        # Public dir
         public_dir_link_path = self.get_public_dir_symlink_path(mod_dir)
-        if public_dir_link_path.exists():
-            if public_dir_link_path.is_junction():
-                os.remove(public_dir_link_path)
-
-                if not public_dir_link_path.exists():
-                    self.logger.info(f"Removed public link: {public_dir_link_path}")
-                    removed_public_dir_link = True
-            else:
-                self.logger.error(f"{public_dir_link_path} is not a junction")
-        else:
-            self.logger.error(f"{public_dir_link_path} does not exist")
-
-        removed_localization_file_link = False
+        removed_public_dir_link = self.remove_link_if_exists(public_dir_link_path)
+        # Localization file
         localization_file_link_path = self.get_loca_dir_symlink_path(mod_dir)
-        if localization_file_link_path.exists():
-            if localization_file_link_path.is_junction():
-                os.remove(localization_file_link_path)
-                if not localization_file_link_path.exists():
-                    self.logger.info(
-                        f"Removed localization file link: {localization_file_link_path}"
-                    )
-                    removed_localization_file_link = True
-            else:
-                self.logger.error(f"{localization_file_link_path} is not a junction")
-        else:
-            self.logger.error(f"{localization_file_link_path} does not exist")
-
+        removed_localization_file_link = self.remove_link_if_exists(
+            localization_file_link_path
+        )
         return (
             removed_mod_dir_link
             and removed_public_dir_link

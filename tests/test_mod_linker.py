@@ -1,5 +1,3 @@
-import os
-
 from ModAnalyzer.Structure import ModLinker
 
 
@@ -12,7 +10,8 @@ def test_create_symlinks():
     3. Public folder: C:\\Program Files (x86)\\Steam\\steamapps\\common\\Baldurs Gate 3\\Data\\Public\\ModName
     """
     game_dir = "FakeGameFolder"
-    mod_dir = os.path.join("..", "..", "Mods", "FaerunForAll-BG3Mod", "FaerunForAll")
+    # mod_dir = os.path.join("..", "..", "Mods", "FaerunForAll-BG3Mod", "FaerunForAll")
+    mod_dir = "TestMod"
     mod_linker = ModLinker(game_dir)
 
     linked_mod = mod_linker.link_mod(mod_dir)
