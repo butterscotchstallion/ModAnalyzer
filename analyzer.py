@@ -23,7 +23,7 @@ def analyze(
     typer.echo(f"Analyzing {mod_directory} {debug_mode_indicator}")
     typer.echo(f"=================================================={os.linesep}")
     analyzer = Analyzer(using_typer=True)
-    analyzer.analyze(mod_directory, mod_name, debug_mode=debug_mode)
+    analyzer.analyze(mod_directory, debug_mode=debug_mode)
 
 
 if __name__ == "__main__":

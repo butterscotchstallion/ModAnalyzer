@@ -3,7 +3,7 @@ import os
 import subprocess
 from pathlib import Path
 
-from ModAnalyzer.Structure import StructureAnalyzer
+from ModAnalyzer import Structure
 
 
 class ModLinker:
@@ -88,14 +88,14 @@ class ModLinker:
 
     def get_mod_dir_symlink_path(self, mod_dir: str) -> Path:
         """Assemble symlink path using data dir and mod name"""
-        mod_name = StructureAnalyzer.get_mod_name_from_dir(mod_dir)
+        mod_name = Structure.StructureAnalyzer.get_mod_name_from_dir(mod_dir)
         return Path(os.path.join(self.game_data_dir, "Data", "Mods", mod_name))
 
     def get_localization_filename(self, mod_name: str) -> str:
         return f"{mod_name}-English.xml"
 
     def get_loca_dir_symlink_path(self, mod_dir: str) -> Path:
-        mod_name = StructureAnalyzer.get_mod_name_from_dir(mod_dir)
+        mod_name = Structure.StructureAnalyzer.get_mod_name_from_dir(mod_dir)
         return Path(
             os.path.join(
                 self.game_data_dir,
@@ -107,7 +107,7 @@ class ModLinker:
         )
 
     def get_public_dir_symlink_path(self, mod_dir: str) -> Path:
-        mod_name = StructureAnalyzer.get_mod_name_from_dir(mod_dir)
+        mod_name = Structure.StructureAnalyzer.get_mod_name_from_dir(mod_dir)
         return Path(
             os.path.join(
                 self.game_data_dir,
@@ -136,19 +136,20 @@ class ModLinker:
                 f"Attempting to symlink (symlink path -> mod target path) {symlink_path} -> {path_to_link}"
             )
 
-            if os.path.isjunction(symlink_path):
-                self.logger.debug(f"Removing existing symlink: {symlink_path}")
-                os.remove(symlink_path)
+            if symlink_path.is_symlink():
+                self.logger.debug(f"Unlinking existing symlink: {symlink_path}")
+                os.unlink(symlink_path)
 
-            # symlink_path.symlink_to(mod_path)
+            symlink_path.symlink_to(path_to_link)
             # os.symlink(symlink_path, mod_path, target_is_directory=True)
             # /D requires elevation
-            output = subprocess.check_output(
+            """output = subprocess.check_output(
                 f'mklink /J "{symlink_path}" "{path_to_link}"', shell=True
             )
             self.logger.debug(f"mklink output: {output.decode('utf-8')}")
+            """
 
-            return os.path.isjunction(symlink_path)
+            return symlink_path.is_symlink()
         except subprocess.CalledProcessError as e:
             self.logger.debug(f"Subprocess error: {e}")
             return False
@@ -164,7 +165,7 @@ class ModLinker:
         return self.link(mod_dir, symlink_path, True)
 
     def link_localization_file(self, mod_dir: str) -> bool:
-        mod_name = StructureAnalyzer.get_mod_name_from_dir(mod_dir)
+        mod_name = Structure.StructureAnalyzer.get_mod_name_from_dir(mod_dir)
         localization_file = os.path.join(
             mod_dir, "Localization", "English", self.get_localization_filename(mod_name)
         )
@@ -181,7 +182,7 @@ class ModLinker:
         return self.link(localization_file, symlink_path, False)
 
     def link_public_dir(self, mod_dir: str) -> bool:
-        mod_name = StructureAnalyzer.get_mod_name_from_dir(mod_dir)
+        mod_name = Structure.StructureAnalyzer.get_mod_name_from_dir(mod_dir)
         mod_public_dir = os.path.join(mod_dir, "Public", mod_name)
         mod_public_path = self.check_mod_dir(mod_public_dir)
         if not mod_public_path:
@@ -226,9 +227,9 @@ class ModLinker:
     def unlink(self, link_path: Path) -> bool:
         """Unlinks specified path if it's linked"""
         removed_link = False
-        if link_path.is_junction():
+        if link_path.is_symlink():
             os.unlink(link_path)
-            if not link_path.is_junction():
+            if not link_path.is_symlink():
                 self.logger.info(f"Unlinked {link_path}")
                 removed_link = True
         else:

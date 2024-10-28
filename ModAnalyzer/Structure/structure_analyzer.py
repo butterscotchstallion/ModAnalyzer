@@ -13,7 +13,6 @@ class StructureReport:
     mod_dir_exists: bool = False
     mod_dir_is_dir: bool = False
     has_mods_modname: bool = False
-    has_mod_fixer: bool = False
     has_public: bool = False
     # Files
     has_meta_file: bool = False
@@ -63,7 +62,7 @@ class StructureAnalyzer:
 
     def get_mod_dir_without_dir_seps(self, mod_dir_name: str) -> str:
         mod_name = mod_dir_name.rstrip(os.sep)
-        mod_name = mod_dir_name.rstrip("/")
+        mod_name = mod_name.rstrip("/")
         return mod_name
 
     def generate_report(
@@ -122,7 +121,6 @@ class StructureAnalyzer:
         # If they do not have the mod root dir, then they won't have this stuff either
         report.has_meta_file = self.has_meta(self.mod_dirs)
         report.has_public = self.has_public(self.mod_dirs)
-        report.has_mod_fixer = self.has_mod_fixer(self.mod_dirs)
         report.has_root_templates = self.has_root_templates(self.mod_dirs)
         report.has_treasure_table = self.has_treasure_table(self.mod_dirs)
 
@@ -268,17 +266,3 @@ class StructureAnalyzer:
     #################################
     # Other checks                  #
     #################################
-
-    def has_mod_fixer(self, mod_dirs: list[str]) -> bool:
-        """
-        This needs to be more nuanced than checking for files
-        in the Goals directory
-        """
-
-        """
-        if self.has_goals(mod_dirs):
-            goals_path_parts = self.get_goals_path_parts()
-            goals_path_parts.append("ForceRecompile.txt")
-            mod_fixer_path = os.path.join(*goals_path_parts)
-        """
-        return False

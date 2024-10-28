@@ -37,5 +37,3 @@ def test_get_dirs(mod_dirs_fixture: list[str]):
     assert report.has_public, "No public dir"
     assert report.has_root_templates, "No root templates"
     assert report.has_treasure_table, "No treasure table"
-    # NYI
-    assert not report.has_mod_fixer, "Has ModFixer?"

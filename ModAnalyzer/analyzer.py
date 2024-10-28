@@ -2,6 +2,7 @@ import os
 import pprint
 import time
 import xml.etree.ElementTree as ET
+from pathlib import Path
 
 import typer
 from tabulate import tabulate
@@ -36,11 +37,11 @@ class Analyzer:
         if "using_typer" in kwargs:
             self.using_typer = kwargs["using_typer"]
 
-    def print(self, input: str):
+    def print(self, input_str: str):
         if self.using_typer:
-            typer.echo(input)
+            typer.echo(input_str)
         else:
-            pprint.pp(input)
+            pprint.pp(input_str)
 
     def get_colored_status(
         self,
@@ -70,8 +71,8 @@ class Analyzer:
         debug_tbl = []
 
         if len(analyzer.mod_dirs) > 0:
-            for dir in analyzer.mod_dirs:
-                debug_tbl.append([dir])
+            for mod_dir in analyzer.mod_dirs:
+                debug_tbl.append([mod_dir])
 
             typer.echo(tabulate(debug_tbl, headers=["Mod Directories"]))
         else:
@@ -162,14 +163,13 @@ class Analyzer:
             num_verified_items = typer.style(
                 len(tt_report.verified_items), typer.colors.GREEN
             )
-            tt_report_table = []
-            tt_report_table.append(
+            tt_report_table = [
                 [
                     "Verified treasure items",
                     self.get_colored_status(True, ok_str="OK", fail_str="FAIL"),
                     f"{num_verified_items} items present in treasure tables",
                 ]
-            )
+            ]
 
             num_ignored = typer.style(
                 len(tt_report.ignored_items), fg=typer.colors.GREEN
@@ -388,9 +388,15 @@ class Analyzer:
         typer.echo(f"Analysis complete in {elapsed_desc} seconds")
         typer.echo(os.linesep)
 
-    def analyze(self, mod_dir: str, mod_name: str, **kwargs):
+    def analyze(self, mod_dir: str, **kwargs):
         start_time: float = time.time()
+        mod_name = StructureAnalyzer.get_mod_name_from_dir(mod_dir)
         structure_analyzer = Structure.StructureAnalyzer(mod_name=mod_name)
+
+        # Resolve if relative path
+        if "." in mod_dir:
+            mod_dir = Path(mod_dir).resolve()
+
         mod_dir = structure_analyzer.get_mod_dir_without_dir_seps(mod_dir)
         structure_report = structure_analyzer.generate_report(mod_dir)
         debug_mode = False
