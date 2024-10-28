@@ -227,6 +227,10 @@ class StructureAnalyzer:
     def has_localization(self, mod_dirs: list[str]) -> bool:
         return self.is_path_in_mod_dirs(mod_dirs, self.mod_dir_name)
 
+    @staticmethod
+    def get_mod_name_from_dir(mod_dir: str) -> str:
+        return os.path.basename(os.path.normpath(mod_dir))
+
     def get_meta_path(self) -> str:
         return os.path.join(self.get_mods_modname_path(), "meta.lsx")
 
