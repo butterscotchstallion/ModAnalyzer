@@ -395,7 +395,7 @@ class Analyzer:
 
         # Resolve if relative path
         if "." in mod_dir:
-            mod_dir = Path(mod_dir).resolve()
+            mod_dir = str(Path(mod_dir).resolve())
 
         mod_dir = structure_analyzer.get_mod_dir_without_dir_seps(mod_dir)
         structure_report = structure_analyzer.generate_report(mod_dir)

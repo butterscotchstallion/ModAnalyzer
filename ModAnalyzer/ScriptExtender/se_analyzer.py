@@ -35,8 +35,9 @@ class SEAnalyzer:
         return config_path
 
     def get_base_path(self) -> str:
-        path_parts = [self.structure_analyzer.get_mods_modname_path(), "ScriptExtender"]
-        return os.path.join(*path_parts)
+        return os.path.join(
+            self.structure_analyzer.get_mods_modname_path(), "ScriptExtender"
+        )
 
     def get_lua_dir(self) -> str:
         return os.path.join(*[self.get_base_path(), "Lua"])
@@ -80,11 +81,11 @@ class SEAnalyzer:
             mod_dirs, self.get_bootstrap_client_file_path()
         )
 
-    def get_required_config_fields(self) -> tuple:
-        return ("RequiredVersion", "ModTable", "FeatureFlags")
+    def get_required_config_fields(self) -> list:
+        return ["RequiredVersion", "ModTable", "FeatureFlags"]
 
     def get_missing_config_fields(self, parsed_config: dict) -> list[str]:
-        required_fields: tuple = self.get_required_config_fields()
+        required_fields = self.get_required_config_fields()
         missing_fields: list[str] = []
 
         for field in required_fields:
@@ -163,8 +164,10 @@ class SEAnalyzer:
                     # This log will show in the output!
                     # self.logger.error(f"Error parsing {config_path}: {err}")
                     report.config_parse_error = str(err)
-                except Exception:
-                    self.logger.error(f"Unexpected error while parsing {config_path}")
+                except Exception as e:
+                    self.logger.error(
+                        f"Unexpected error while parsing {config_path}: {e}"
+                    )
 
             if report.has_server_dir:
                 report.has_bootstrap_server = self.has_bootstrap_server(mod_dirs)

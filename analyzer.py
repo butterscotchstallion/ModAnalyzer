@@ -11,7 +11,6 @@ app = typer.Typer()
 @app.command()
 def analyze(
     mod_directory: str,
-    mod_name: str,
     debug_mode: Optional[bool] = typer.Option(
         False, help="Enables additional debug logging"
     ),
