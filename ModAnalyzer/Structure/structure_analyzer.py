@@ -14,6 +14,7 @@ class StructureReport:
     mod_dir_is_dir: bool = False
     has_mods_modname: bool = False
     has_public: bool = False
+    has_tags: bool = False
     # Files
     has_meta_file: bool = False
     has_root_templates: bool = False
@@ -123,6 +124,7 @@ class StructureAnalyzer:
         report.has_public = self.has_public(self.mod_dirs)
         report.has_root_templates = self.has_root_templates(self.mod_dirs)
         report.has_treasure_table = self.has_treasure_table(self.mod_dirs)
+        report.has_tags = self.has_tags(self.mod_dirs)
 
         return report
 
@@ -263,6 +265,6 @@ class StructureAnalyzer:
         goals_path_parts = self.get_goals_path_parts()
         return self.is_path_in_mod_dirs(mod_dirs, *goals_path_parts)
 
-    #################################
-    # Other checks                  #
-    #################################
+    def has_tags(self, mod_dirs) -> bool:
+        tags_path = self.get_tags_path()
+        return self.is_path_in_mod_dirs(mod_dirs, tags_path)

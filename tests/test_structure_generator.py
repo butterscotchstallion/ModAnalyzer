@@ -46,6 +46,7 @@ def test_create_structure():
             assert sa_report.has_public, "No public dir"
             assert sa_report.has_root_templates, "No root templates"
             assert sa_report.has_treasure_table, "No treasure table"
+            assert sa_report.has_tags, "No tags dir"
 
             logger.debug("Verified basic mod structure")
 
