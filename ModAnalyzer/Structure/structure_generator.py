@@ -55,18 +55,18 @@ class StructureGenerator:
     def create_se_lua_file(
         self, mod_name: str, lua_file_path: str, write_hello_world: bool = False
     ) -> bool:
-        bootstrap_path = Path(lua_file_path)
-        bootstrap_path.touch()
+        se_file_path = Path(lua_file_path)
+        se_file_path.touch()
 
         if write_hello_world:
-            hello_world = f'print("Hello world from {mod_name}!")'
-            bootstrap_path.write_text(hello_world)
+            hello_world = f'print("Hello world from {mod_name}!{os.linesep * 2}")'
+            se_file_path.write_text(hello_world)
 
         self.logger.debug(
-            f"Wrote {bootstrap_path.stem}.lua ({bootstrap_path.stat().st_size} bytes)"
+            f"Wrote {se_file_path.stem}.lua ({se_file_path.stat().st_size} bytes)"
         )
 
-        return bootstrap_path.is_file()
+        return se_file_path.is_file()
 
     def create_se_files(self, mod_name: str, se_analyzer: SEAnalyzer) -> bool:
         try:
@@ -146,11 +146,9 @@ class StructureGenerator:
     def create_localization_files(
         self, localization_dir_path: str, localization_file_path: str
     ) -> bool:
-        loca_file_exists = False
-        loca_dir_exists = False
         try:
             loca_path = Path(localization_dir_path)
-
+            loca_file_exists = False
             if not loca_path.exists():
                 loca_path.mkdir(exist_ok=False, parents=True)
                 loca_dir_exists = loca_path.exists()
@@ -179,32 +177,17 @@ class StructureGenerator:
             )
             return False
 
-    def create_treasure_table(self, tt_file_path: str) -> bool:
+    def create_file_and_confirm_exists(self, filename: str) -> bool:
         try:
-            tt_path = Path(tt_file_path)
-
-            if not tt_path.exists():
-                tt_path.touch()
-                return tt_path.exists()
+            file_path = Path(filename)
+            if not file_path.exists():
+                file_path.touch()
+                return file_path.exists()
             else:
-                self.logger.error(f"Treasure table exists at {tt_file_path}")
+                self.logger.error(f"File exists at {file_path}")
                 return False
         except Exception as err:
-            self.logger.error(f"Unexpected error creating treasure table: {err}")
-            return False
-
-    def create_equipment_file(self, equipment_path: str) -> bool:
-        try:
-            equip_path = Path(equipment_path)
-
-            if not equip_path.exists():
-                equip_path.touch()
-                return equip_path.exists()
-            else:
-                self.logger.error(f"Equipment file exists at {equip_path}")
-                return False
-        except Exception as err:
-            self.logger.error(f"Unexpected error creating equipment file: {err}")
+            self.logger.error(f"Unexpected error creating file: {err}")
             return False
 
     def get_template_with_replacements(
@@ -278,8 +261,8 @@ class StructureGenerator:
             else:
                 self.logger.error(f"Tags dir exists at {path}")
                 return False
-        except Exception:
-            self.logger.error(f"Unexpected error creating tags dir: {path}")
+        except Exception as err:
+            self.logger.error(f"Unexpected error creating tags dir: {path}: {err}")
             return False
 
     def create_item_combos_file(self, generated_path: str) -> bool:
@@ -389,10 +372,10 @@ class StructureGenerator:
                     )
                     self.create_se_files(mod_dir, se_analyzer)
                     self.create_root_templates(structure_analyzer.get_rt_dir())
-                    self.create_treasure_table(
+                    self.create_file_and_confirm_exists(
                         structure_analyzer.get_treasure_table_file_path()
                     )
-                    self.create_equipment_file(
+                    self.create_file_and_confirm_exists(
                         structure_analyzer.get_equipment_file_path()
                     )
                     self.create_tags_directory_and_sample_tag(
