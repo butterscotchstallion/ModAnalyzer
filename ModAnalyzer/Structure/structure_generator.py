@@ -297,9 +297,8 @@ class StructureGenerator:
             self.logger.error(f"Unexpected error creating stats files: {err}")
             return False
 
-    def get_safe_uuid(self) -> str:
-        mod_uuid = str(uuid.uuid4())
-        return mod_uuid.replace("-", "")
+    def get_mod_uuid(self) -> str:
+        return str(uuid.uuid4())
 
     def create_structure(self, **kwargs) -> bool:
         """
