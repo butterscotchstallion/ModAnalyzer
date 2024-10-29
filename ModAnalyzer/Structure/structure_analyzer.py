@@ -3,6 +3,7 @@ import os
 from dataclasses import dataclass
 from pathlib import Path
 
+from ModAnalyzer.Structure.models import Tag
 from ModAnalyzer.Structure.path_analyzer import PathAnalyzer
 
 
@@ -268,3 +269,7 @@ class StructureAnalyzer:
     def has_tags(self, mod_dirs) -> bool:
         tags_path = self.get_tags_path()
         return self.is_path_in_mod_dirs(mod_dirs, tags_path)
+
+    def get_tags_from_file_contents(self, tag_file_contents: str) -> list[Tag]:
+        """Parse tag XML and build a list of Tags"""
+        pass

@@ -1,5 +1,6 @@
 import logging
 import os
+from pathlib import Path
 
 from ModAnalyzer import Structure
 
@@ -37,3 +38,10 @@ def test_get_dirs(mod_dirs_fixture: list[str]):
     assert report.has_public, "No public dir"
     assert report.has_root_templates, "No root templates"
     assert report.has_treasure_table, "No treasure table"
+
+
+def test_get_tags_from_file():
+    """Parses tag file XML and returns each tag as an object"""
+    analyzer = Structure.StructureAnalyzer()
+    tag_file_contents = Path("ModAnalyzer/Structure/file_templates/").read_text()
+    tag = analyzer.get_tags_from_file_contents(tag_file_contents)
