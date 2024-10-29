@@ -52,6 +52,22 @@ class StructureGenerator:
 
         return created
 
+    def create_se_lua_file(
+        self, mod_name: str, lua_file_path: str, write_hello_world: bool = False
+    ) -> bool:
+        bootstrap_path = Path(lua_file_path)
+        bootstrap_path.touch()
+
+        if write_hello_world:
+            hello_world = f'print("Hello world from {mod_name}!")'
+            bootstrap_path.write_text(hello_world)
+
+        self.logger.debug(
+            f"Wrote {bootstrap_path.stem}.lua ({bootstrap_path.stat().st_size} bytes)"
+        )
+
+        return bootstrap_path.is_file()
+
     def create_se_files(self, mod_name: str, se_analyzer: SEAnalyzer) -> bool:
         try:
             config_file_path = Path(se_analyzer.get_config_path())
@@ -73,20 +89,31 @@ class StructureGenerator:
 
                     self.logger.debug(f"Wrote SE config JSON to {config_file_path}")
 
-                    # Create Bootstrap
-                    bootstrap_filename = se_analyzer.get_bootstrap_server_file_path()
-                    bootstrap_path = Path(bootstrap_filename)
-                    bootstrap_path.touch()
+                    """
+                    Create server/client bootstraps
+                    """
 
-                    # Write Bootstrap Hello world
-                    hello_world = f'print("Hello world from {mod_name}!")'
-                    bootstrap_path.write_text(hello_world)
-
-                    self.logger.debug(
-                        f"Wrote {bootstrap_path.stem}.lua ({bootstrap_path.stat().st_size} bytes) Hello World"
+                    # Server
+                    server_bootstrap_filename = (
+                        se_analyzer.get_bootstrap_server_file_path()
+                    )
+                    server_bootstrap_path_exists = self.create_se_lua_file(
+                        mod_name, server_bootstrap_filename, True
                     )
 
-                    return config_exists and bootstrap_path.exists()
+                    # Client
+                    client_bootstrap_filename = (
+                        se_analyzer.get_bootstrap_client_file_path()
+                    )
+                    client_bootstrap_path_exists = self.create_se_lua_file(
+                        mod_name, client_bootstrap_filename
+                    )
+
+                    return (
+                        config_exists
+                        and server_bootstrap_path_exists
+                        and client_bootstrap_path_exists
+                    )
                 else:
                     return False
             else:
@@ -150,7 +177,6 @@ class StructureGenerator:
             self.logger.error(
                 f"Unexpected error creating localization directory: {err}"
             )
-            # print(traceback.format_exception(err))
             return False
 
     def create_treasure_table(self, tt_file_path: str) -> bool:
