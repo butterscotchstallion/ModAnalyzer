@@ -3,6 +3,7 @@ import os
 from pathlib import Path
 
 from ModAnalyzer import Structure
+from ModAnalyzer.Structure.models import Tag
 
 logger = logging.getLogger(__file__)
 TEST_MOD_NAME = "TestMod"
@@ -43,5 +44,10 @@ def test_get_dirs(mod_dirs_fixture: list[str]):
 def test_get_tags_from_file():
     """Parses tag file XML and returns each tag as an object"""
     analyzer = Structure.StructureAnalyzer()
-    tag_file_contents = Path("ModAnalyzer/Structure/file_templates/").read_text()
-    tag = analyzer.get_tags_from_file_contents(tag_file_contents)
+    tag_file_contents = Path(
+        os.path.join("ModAnalyzer", "Structure", "file_templates", "tag.lsx")
+    ).read_text()
+    tags: list[Tag] = analyzer.get_tags_from_file_contents(tag_file_contents)
+
+    assert tags
+    assert len(tags) == 2

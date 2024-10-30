@@ -1,10 +1,12 @@
 import logging
 import os
+import xml.etree.ElementTree as ET
 from dataclasses import dataclass
 from pathlib import Path
 
 from ModAnalyzer.Structure.models import Tag
 from ModAnalyzer.Structure.path_analyzer import PathAnalyzer
+from ModAnalyzer.Structure.xml_utils import get_tag_with_id_from_node
 
 
 @dataclass
@@ -272,4 +274,24 @@ class StructureAnalyzer:
 
     def get_tags_from_file_contents(self, tag_file_contents: str) -> list[Tag]:
         """Parse tag XML and build a list of Tags"""
-        pass
+        tags: list[Tag] = []
+
+        root_node: ET.Element = ET.fromstring(tag_file_contents)
+
+        if root_node is not None:
+            save_node = root_node.find("save")
+            if save_node is not None:
+                tags_region = get_tag_with_id_from_node(save_node, "Tags", "Tags")
+                if tags_region is not None:
+                    tag_nodes = tags_region.findall("node")
+                    if len(tag_nodes) > 0:
+                        for node in tag_nodes:
+                            self.logger.debug(node.attrib)
+                else:
+                    self.logger.error(
+                        "get_tags_from_file_contents: unable to find tags region"
+                    )
+            else:
+                self.logger.error("get_tags_from_file_contents: unable to get save tag")
+
+        return tags
