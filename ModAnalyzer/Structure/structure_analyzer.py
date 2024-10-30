@@ -272,6 +272,32 @@ class StructureAnalyzer:
         tags_path = self.get_tags_path()
         return self.is_path_in_mod_dirs(mod_dirs, tags_path)
 
+    def get_categories_from_children_node(self, children_node: ET.Element) -> list[str]:
+        """
+        <children>
+            <node id="Categories">
+                <children>
+                    <node id="Category">
+                        <attribute id="Name" type="LSString" value="Code"/>
+                    </node>
+                    <node id="Category">
+                        <attribute id="Name" type="LSString" value="CharacterSheet"/>
+                    </node>
+                </children>
+            </node>
+        </children>
+        """
+        categories: list[str] = []
+        categories_node = children_node.find("node")
+        if categories_node is not None:
+            categories_node_children = categories_node.find("children")
+            if categories_node_children is not None:
+                category_nodes = categories_node_children.findall("node")
+                if len(category_nodes) > 0:
+                    for category_node in category_nodes:
+                        attr_node = category_node.find("atttribute")
+        return categories
+
     def get_tags_from_file_contents(self, tag_file_contents: str) -> list[Tag]:
         """Parse tag XML and build a list of Tags"""
         tags: list[Tag] = []
@@ -279,19 +305,60 @@ class StructureAnalyzer:
         root_node: ET.Element = ET.fromstring(tag_file_contents)
 
         if root_node is not None:
-            save_node = root_node.find("save")
-            if save_node is not None:
-                tags_region = get_tag_with_id_from_node(save_node, "Tags", "Tags")
-                if tags_region is not None:
-                    tag_nodes = tags_region.findall("node")
-                    if len(tag_nodes) > 0:
-                        for node in tag_nodes:
-                            self.logger.debug(node.attrib)
-                else:
-                    self.logger.error(
-                        "get_tags_from_file_contents: unable to find tags region"
-                    )
+            tags_region = get_tag_with_id_from_node(root_node, "region", "Tags")
+            if tags_region is not None:
+                tag_nodes = tags_region.findall("node")
+                if len(tag_nodes) > 0:
+                    for tag_node in tag_nodes:
+                        self.logger.debug(tag_node.attrib)
+                        tag_name = (
+                            tag_node.attrib["Name"]
+                            if "Name" in tag_node.attrib
+                            else None
+                        )
+                        tag_uuid = (
+                            tag_node.attrib["UUID"]
+                            if "UUID" in tag_node.attrib
+                            else None
+                        )
+                        tag_desc = (
+                            tag_node.attrib["Description"]
+                            if "Description" in tag_node.attrib
+                            else None
+                        )
+                        tag_display_desc = (
+                            tag_node.attrib["DisplayDescription"]
+                            if "DisplayDescription" in tag_node.attrib
+                            else None
+                        )
+                        tag_display_name = (
+                            tag_node.attrib["DisplayName"]
+                            if "DisplayName" in tag_node.attrib
+                            else None
+                        )
+                        tag_icon = (
+                            tag_node.attrib["Icon"]
+                            if "Icon" in tag_node.attrib
+                            else None
+                        )
+                        tags.append(
+                            Tag(
+                                name=tag_name,
+                                description=tag_desc,
+                                display_name=tag_display_name,
+                                display_description=tag_display_desc,
+                                icon=tag_icon,
+                                uuid=tag_uuid,
+                                categories=self.get_categories_from_children_node(
+                                    tag_node.find("children")
+                                ),
+                            )
+                        )
+
+                return tags
             else:
-                self.logger.error("get_tags_from_file_contents: unable to get save tag")
+                self.logger.error(
+                    "get_tags_from_file_contents: unable to find tags region"
+                )
 
         return tags
