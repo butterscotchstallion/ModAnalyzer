@@ -47,7 +47,7 @@ def test_get_tags_from_file():
     """Parses tag file XML and returns each tag as an object"""
     analyzer = Structure.StructureAnalyzer()
     tag_file_contents = Path(os.path.join("tests", "fixture", "tag.lsx")).read_text()
-    tags: list[Tag] = analyzer.get_tags_from_file_contents(tag_file_contents)
+    tags: list[Tag] = analyzer.get_tag_from_lsx(tag_file_contents)
 
     assert tags
     assert len(tags) == 1

@@ -300,9 +300,9 @@ class StructureAnalyzer:
                         categories.append(attr.attrib.get("value"))
         return sorted(categories)
 
-    def get_tags_from_file_contents(self, tag_file_contents: str) -> list[Tag]:
+    def get_tag_from_lsx(self, tag_file_contents: str) -> Tag | None:
         """Parse tag XML and build a list of Tags"""
-        tags: list[Tag] = []
+        tag: Tag | None = None
         root_node: ET.Element = ET.fromstring(tag_file_contents)
 
         if root_node is not None:
@@ -347,26 +347,23 @@ class StructureAnalyzer:
                                 tag_values[tag_prop["name"]] = attr.attrib.get(
                                     tag_prop["value_prop"]
                                 )
-                    tags.append(
-                        Tag(
-                            name=tag_values["Name"],
-                            description=tag_values["Description"],
-                            display_name=tag_values["DisplayName"],
-                            display_description=tag_values["DisplayDescription"],
-                            icon=tag_values["Icon"],
-                            uuid=tag_values["UUID"],
-                            categories=self.get_categories_from_children_node(
-                                tag_node.find("children")
-                            ),
-                        )
+                    tag = Tag(
+                        name=tag_values["Name"],
+                        description=tag_values["Description"],
+                        display_name=tag_values["DisplayName"],
+                        display_description=tag_values["DisplayDescription"],
+                        icon=tag_values["Icon"],
+                        uuid=tag_values["UUID"],
+                        categories=self.get_categories_from_children_node(
+                            tag_node.find("children")
+                        ),
                     )
-                return tags
             else:
                 self.logger.error(
                     "get_tags_from_file_contents: unable to find tags region"
                 )
 
-        return tags
+        return tag
 
     def get_tag_category_list_from_tag(self, tag: Tag) -> str:
         """Returns comma separated list of tag names"""
