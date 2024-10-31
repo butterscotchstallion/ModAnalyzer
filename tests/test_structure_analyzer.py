@@ -47,12 +47,9 @@ def test_get_tags_from_file():
     """Parses tag file XML and returns each tag as an object"""
     analyzer = Structure.StructureAnalyzer()
     tag_file_contents = Path(os.path.join("tests", "fixture", "tag.lsx")).read_text()
-    tags: list[Tag] = analyzer.get_tag_from_lsx(tag_file_contents)
+    tag = analyzer.get_tag_from_lsx(tag_file_contents)
 
-    assert tags
-    assert len(tags) == 1
-
-    tag = tags[0]
+    assert isinstance(tag, Tag), "Failed to get tag from file"
     assert tag.uuid == "4b8dbf5b-68d8-4c1e-80c2-b68ce13a82c8"
     assert tag.name == "TEST_MOD_TAG"
     assert tag.description == "test description"
