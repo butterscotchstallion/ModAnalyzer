@@ -295,7 +295,10 @@ class StructureAnalyzer:
                 category_nodes = categories_node_children.findall("node")
                 if len(category_nodes) > 0:
                     for category_node in category_nodes:
-                        attr_node = category_node.find("atttribute")
+                        # There is only one attribute node for each
+                        attr = category_node.find("attribute")
+                        if attr is not None:
+                            categories.append(attr.attrib.get("value"))
         return categories
 
     def get_tags_from_file_contents(self, tag_file_contents: str) -> list[Tag]:
@@ -307,53 +310,58 @@ class StructureAnalyzer:
         if root_node is not None:
             tags_region = get_tag_with_id_from_node(root_node, "region", "Tags")
             if tags_region is not None:
-                tag_nodes = tags_region.findall("node")
-                if len(tag_nodes) > 0:
-                    for tag_node in tag_nodes:
-                        self.logger.debug(tag_node.attrib)
-                        tag_name = (
-                            tag_node.attrib["Name"]
-                            if "Name" in tag_node.attrib
-                            else None
+                tag_node: ET.Element = tags_region.find("node")
+                if tag_node is not None:
+                    tag_props: list[dict] = [
+                        {
+                            "name": "Name",
+                            "value_prop": "value",
+                        },
+                        {
+                            "name": "UUID",
+                            "value_prop": "value",
+                        },
+                        {
+                            "name": "Description",
+                            "value_prop": "value",
+                        },
+                        {
+                            "name": "DisplayDescription",
+                            "value_prop": "handle",
+                        },
+                        {
+                            "name": "DisplayName",
+                            "value_prop": "handle",
+                        },
+                        {
+                            "name": "Icon",
+                            "value_prop": "value",
+                        },
+                    ]
+                    tag_values: dict[str, str] = {}
+                    attrs: list[ET.Element] = tag_node.findall("attribute")
+                    for attr in attrs:
+                        for tag_prop in tag_props:
+                            if (
+                                "id" in attr.attrib
+                                and attr.attrib["id"] == tag_prop["name"]
+                            ):
+                                tag_values[tag_prop["name"]] = attr.attrib.get(
+                                    tag_prop["value_prop"]
+                                )
+                    tags.append(
+                        Tag(
+                            name=tag_values["Name"],
+                            description=tag_values["Description"],
+                            display_name=tag_values["DisplayName"],
+                            display_description=tag_values["DisplayDescription"],
+                            icon=tag_values["Icon"],
+                            uuid=tag_values["UUID"],
+                            categories=self.get_categories_from_children_node(
+                                tag_node.find("children")
+                            ),
                         )
-                        tag_uuid = (
-                            tag_node.attrib["UUID"]
-                            if "UUID" in tag_node.attrib
-                            else None
-                        )
-                        tag_desc = (
-                            tag_node.attrib["Description"]
-                            if "Description" in tag_node.attrib
-                            else None
-                        )
-                        tag_display_desc = (
-                            tag_node.attrib["DisplayDescription"]
-                            if "DisplayDescription" in tag_node.attrib
-                            else None
-                        )
-                        tag_display_name = (
-                            tag_node.attrib["DisplayName"]
-                            if "DisplayName" in tag_node.attrib
-                            else None
-                        )
-                        tag_icon = (
-                            tag_node.attrib["Icon"]
-                            if "Icon" in tag_node.attrib
-                            else None
-                        )
-                        tags.append(
-                            Tag(
-                                name=tag_name,
-                                description=tag_desc,
-                                display_name=tag_display_name,
-                                display_description=tag_display_desc,
-                                icon=tag_icon,
-                                uuid=tag_uuid,
-                                categories=self.get_categories_from_children_node(
-                                    tag_node.find("children")
-                                ),
-                            )
-                        )
+                    )
 
                 return tags
             else:

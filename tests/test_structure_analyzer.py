@@ -44,10 +44,17 @@ def test_get_dirs(mod_dirs_fixture: list[str]):
 def test_get_tags_from_file():
     """Parses tag file XML and returns each tag as an object"""
     analyzer = Structure.StructureAnalyzer()
-    tag_file_contents = Path(
-        os.path.join("ModAnalyzer", "Structure", "file_templates", "tag.lsx")
-    ).read_text()
+    tag_file_contents = Path(os.path.join("tests", "fixture", "tag.lsx")).read_text()
     tags: list[Tag] = analyzer.get_tags_from_file_contents(tag_file_contents)
 
     assert tags
-    assert len(tags) == 2
+    assert len(tags) == 1
+
+    tag = tags[0]
+    assert tag.uuid == "4b8dbf5b-68d8-4c1e-80c2-b68ce13a82c8"
+    assert tag.name == "TEST_MOD_TAG"
+    assert tag.description == "test description"
+    assert tag.display_name == "ha59594e8g8544g4bbdg82ddge6c19ba2bc6d"
+    assert tag.display_description == "h6c83d504g5aa4g42abga0e7g770c9d830753"
+    assert tag.icon == "icon"
+    assert tag.categories == ["Code", "CharacterSheet"]
