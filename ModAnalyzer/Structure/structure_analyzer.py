@@ -179,7 +179,7 @@ class StructureAnalyzer:
         return os.path.join(self.get_generated_path(), "Equipment.txt")
 
     def get_tags_path(self) -> str:
-        return os.path.join(self.get_public_path(), "Tags")
+        return os.path.join(self.get_public_path(), self.mod_dir_name, "Tags")
 
     def get_localization_dir_path(self) -> str:
         return os.path.join(*[self.mod_dir_name, "Localization", "English"])
@@ -293,18 +293,16 @@ class StructureAnalyzer:
             categories_node_children = categories_node.find("children")
             if categories_node_children is not None:
                 category_nodes = categories_node_children.findall("node")
-                if len(category_nodes) > 0:
-                    for category_node in category_nodes:
-                        # There is only one attribute node for each
-                        attr = category_node.find("attribute")
-                        if attr is not None:
-                            categories.append(attr.attrib.get("value"))
+                for category_node in category_nodes:
+                    # There is only one attribute node for each
+                    attr = category_node.find("attribute")
+                    if attr is not None:
+                        categories.append(attr.attrib.get("value"))
         return categories
 
     def get_tags_from_file_contents(self, tag_file_contents: str) -> list[Tag]:
         """Parse tag XML and build a list of Tags"""
         tags: list[Tag] = []
-
         root_node: ET.Element = ET.fromstring(tag_file_contents)
 
         if root_node is not None:
@@ -362,7 +360,6 @@ class StructureAnalyzer:
                             ),
                         )
                     )
-
                 return tags
             else:
                 self.logger.error(
