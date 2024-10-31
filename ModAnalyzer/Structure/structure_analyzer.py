@@ -298,7 +298,7 @@ class StructureAnalyzer:
                     attr = category_node.find("attribute")
                     if attr is not None:
                         categories.append(attr.attrib.get("value"))
-        return categories
+        return sorted(categories)
 
     def get_tags_from_file_contents(self, tag_file_contents: str) -> list[Tag]:
         """Parse tag XML and build a list of Tags"""
@@ -367,3 +367,7 @@ class StructureAnalyzer:
                 )
 
         return tags
+
+    def get_tag_category_list_from_tag(self, tag: Tag) -> str:
+        """Returns comma separated list of tag names"""
+        return ", ".join(sorted(tag.categories))

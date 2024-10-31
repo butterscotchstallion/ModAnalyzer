@@ -59,4 +59,7 @@ def test_get_tags_from_file():
     assert tag.display_name == "ha59594e8g8544g4bbdg82ddge6c19ba2bc6d"
     assert tag.display_description == "h6c83d504g5aa4g42abga0e7g770c9d830753"
     assert tag.icon == "icon"
-    assert tag.categories == ["Code", "CharacterSheet"]
+    assert tag.categories == ["CharacterSheet", "Code"]
+
+    tag_category_list = analyzer.get_tag_category_list_from_tag(tag)
+    assert tag_category_list == "CharacterSheet, Code"
